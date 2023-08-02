@@ -105,8 +105,8 @@ a {
     background-color: #ffffff;
     width: 22%;
     height: 78%;
-    
-    
+    margin-top: 6rem;
+    margin-bottom: 1rem;
     margin-left: auto;
     display: inline-block;
     margin-top: 0.2%;
@@ -115,13 +115,45 @@ a {
     box-shadow: 0 0 5rem rgba(0, 0, 0, 0.3);
     transition: 0.3s;
     text-align: center;
-    
+    overflow: hidden;
 }
 
-.card span p {
-    margin-top: 1.3%;
-    font-size: 2.7778vh;
-    font-family: 'Comfortaa', cursive, 'Rubik Bubbles', 'Dosis', sans-serif;
+.card .content div {
+    text-align: left;
+    margin-left: 5%;
+}
+
+.marquee {
+    text-align: left;
+    width:100%;
+    overflow:hidden;
+    white-space: nowrap;
+}
+
+.marquee span { 
+    display:inline-block;
+    width:100%;
+    text-indent:0;
+    animation: marquee 10s linear infinite;
+}
+
+.marquee span:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee {
+    0%  { 
+        transform: translate(100%, 0); 
+    }
+    100% { 
+        transform: translate(-100%, 0); 
+    }
+}
+@media only screen and (max-width: 440px) {
+    .marquee span {
+        animation:none;
+        padding-left:0;
+    }
 }
 
 .card:hover {
@@ -138,12 +170,12 @@ a {
     height: 32%;
     width: 90%;
     margin-top: 10%;
+    margin-bottom: 20%;
 }
 
 h2 {
-    font-size: auto;
+    font-size: 5vh;
     font-family: 'Comfortaa', cursive, 'Rubik Bubbles', 'Dosis', sans-serif;
-    white-space: normal;
 }
 
 span {

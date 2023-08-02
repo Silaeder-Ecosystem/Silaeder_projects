@@ -38,7 +38,7 @@ def get_user_by_id(id):
 
 def create_user(username, email, password, name, surname):
     try:
-        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (%s, %s, %s, %s, %s, false)"""
+        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (?, ?, ?, ?, ?, false)"""
         cursor.execute(sqlite3_insert_query, (username, email, password, name, surname))
         sqlite_connection.commit()
         return True
