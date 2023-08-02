@@ -20,15 +20,18 @@
             </nav>
         </header> 
         <section>
+            {% for i in ans %}
             <a href="#">
                 <div class="card">
                     <div class="content">
                         <img class="image" src="">
-                        <h2>Title</h2>
-                        <span>By name</span>
+                        <h2>{{i[0]}}</h2>
+                        <span>{{i[2]}}</span>
+                        <span>By {{i[1]}}</span>
                     </div>
                 </div>
             </a>
+            {% endfor %}
         </section>
     </body>
 </html>
