@@ -5,11 +5,23 @@ import json
 #from email import send_email
 from itsdangerous import URLSafeTimedSerializer
 import parse
-from flask_mail import Message
+from flask_mail import Message, Mail
+import re
 
 app = Flask(__name__)
 
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 db.create_all()
+
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'silaederprojects@gmail.com'  
+app.config['MAIL_DEFAULT_SENDER'] = 'silaederprojects@gmail.com'  
+app.config['MAIL_PASSWORD'] = 'waduszxztipcdeyd'  
+
+mail_sender = Mail(app)
 
 def send_email(to, subject, template):
     msg = Message(
@@ -18,7 +30,7 @@ def send_email(to, subject, template):
         html=template,
         sender=parse_data('mail')
     )
-    to.send(msg)
+    mail_sender.send(msg)
 
 def generate_confirmation_token(email):
     serializer = URLSafeTimedSerializer(parse_data('secret_key'))
@@ -57,8 +69,8 @@ def check_jwt(token, username):
 
 @app.route('/', methods=['GET'])
 def main():
-    '''if (db.create_project("Silaeder Projects", "ILYASTARCEK", "ICT", "ILYASTARCEK, NICITATURBOBOY", "site_for_Silaeder_projects", "https://silaeder.com", "github") != True):
-        print("aguzog")'''
+    if (db.create_project("Silaeder Projectssssssssssssssss", "ILYASTARCEK", "ICT", "ILYASTARCEK, NICITATURBOBOY", "site_for_Silaeder_projects", "https://silaeder.com", "github") != True):
+        print("aguzog")
     ans = db.get_all_projects()
     return render_template("index.html", ans = ans)
 
@@ -73,10 +85,10 @@ def login():
 
         #code will be here, when login.html will be done
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/regestration', methods=['GET', 'POST'])
 def register():
     if (request.method == "GET"):
-        pass
+        return render_template("reg.html")
     else:
         form = request.form
 
@@ -94,18 +106,27 @@ def register():
             else:
                 hasSpecialCharecters = True 
 
-        if (len(form["password"]) >= 8 and len(form["password"]) <= 20 and hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters and parse.parse_csv().find(form["email"]) == -1):
+        if ( hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters and form["password"] == form["password2"]):
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", form["email"]):
+                flash('This email is not valid', 'error')
+                return redirect("/regestration", code=302)
+
+            if parse.parse_csv().index(form["email"]) == -1:
+                flash('This is not silaeder email. Check it from Silaeder google sheet or ask administrator (@ilyastarcek), if your email is not there', 'error')
+                return redirect("/regestration", code=302)
+            
             if db.create_user(form['username'], form["email"], form['password'], form['name'], form['surname']) == False:
-                return redirect("/registration", error="username or  already exists" , code=302)
-            #check if username already exists and email already exists
+                flash('This username or email already exists', 'error')
+                return redirect("/regestratio", code=302)
+            
             token = jwt.encode(payload={"name": form["username"]}, key=parse_data("secret_key"))
             
             resp = make_response(redirect("/", code=302))
             resp.set_cookie("jwt", token)
 
             etoken = generate_confirmation_token(form["email"])
-            confirm_url = f'/confirm/{etoken}'
-            html = render_template('user/activate.html', confirm_url=confirm_url)
+            confirm_url = f'http://127.0.0.1:5678/confirm/{etoken}'
+            html = render_template('mail.html', confirm_url=confirm_url)
             subject = "Please confirm your email"
             send_email(form['email'], subject, html)
 
@@ -114,7 +135,8 @@ def register():
             return resp
         
         else:
-            return redirect("/registration", code=302)
+            flash('You write incorrect password.', 'error')
+            return redirect("/regestration", code=302)
 
 @app.route('/confirm/<token>')
 def confirm_email(token):
@@ -122,7 +144,7 @@ def confirm_email(token):
         email = confirm_token(token)
     except:
         flash('The confirmation link is invalid or has expired.', 'danger')
-    payload = jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")
+    token = jwt.encode(payload={"name": form["username"]}, key=parse_data("secret_key"))
     if db.get_user_by_username(payload['name']) != []:
         flash('Account already confirmed. Please login.', 'success')
         return redirect('/login', code=302)

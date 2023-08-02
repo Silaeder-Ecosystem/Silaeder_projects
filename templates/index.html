@@ -14,8 +14,8 @@
                 <span class="name"><a href="#">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 <ul class="nav">
-                    <li><a href="#" class="register"><span>Log In</span></a></li>
-                    <li><a href="#" class="register"><span>Sign Up</span></a></li>
+                    <li><a href="/regestration" class="register"><span>Log In</span></a></li>
+                    <li><a href="/regestration" class="register"><span>Sign Up</span></a></li>
                 </ul>
             </nav>
         </header> 
@@ -25,9 +25,16 @@
                 <div class="card">
                     <div class="content">
                         <img class="image" src="">
-                        <h2>{{i[0]}}</h2>
-                        <span>{{i[2]}}</span>
-                        <span>By {{i[1]}}</span>
+                        <div>
+                            {% if (i[0]|length > 45) %}
+                            <div class="marquee"><span>{{i[0]}}</span></div>
+                            {% else %}
+                            <div><span>{{i[0]}}</span></div>
+                            {% endif %}
+                            <span class="topic">{{i[2]}}</span>
+                            <br>
+                            <span>By {{i[1]}}</span>
+                        </div>
                     </div>
                 </div>
             </a>
