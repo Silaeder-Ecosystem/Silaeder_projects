@@ -15,7 +15,7 @@ def create_all():
 def get_all_projects():
     sqlite_select_query = """SELECT title, teamlead, topic FROM projects"""
     cursor.execute(sqlite_select_query)
-    #sqlite_connection.commit()
+    sqlite_connection.commit()
     return cursor.fetchall()
 
 def get_project_by_id(id):
