@@ -105,8 +105,8 @@ a {
     background-color: #ffffff;
     width: 22%;
     height: 78%;
-    margin-top: 6rem;
-    margin-bottom: 1rem;
+    
+    
     margin-left: auto;
     display: inline-block;
     margin-top: 0.2%;
@@ -115,6 +115,7 @@ a {
     box-shadow: 0 0 5rem rgba(0, 0, 0, 0.3);
     transition: 0.3s;
     text-align: center;
+    
 }
 
 .card span p {
@@ -140,8 +141,9 @@ a {
 }
 
 h2 {
-    font-size: 5vh;
+    font-size: auto;
     font-family: 'Comfortaa', cursive, 'Rubik Bubbles', 'Dosis', sans-serif;
+    white-space: normal;
 }
 
 span {
