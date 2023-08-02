@@ -57,8 +57,11 @@ def check_jwt(token, username):
 
 @app.route('/', methods=['GET'])
 def main():
+    if (db.create_project("Silaeder_Projects", "ILYASTARCEK", "ICT", "ILYASTARCEK, NICITATURBOBOY", "site_for_Silaeder_projects", "https://silaeder.com", "github") != True):
+        print("aguzog")
     ans = db.get_all_projects()
-    return render_template("index.html", projects = ans)
+    print(ans)
+    return render_template("index.html", ans = ans)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
