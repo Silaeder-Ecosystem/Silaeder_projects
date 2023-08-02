@@ -10,40 +10,25 @@
     <body>
         <header class="site-header">
             <nav class="site-navigation">
-                <img src="static/photo_2023-07-31_17-49-55.jpg" class="logo">
+                <img src="{{ url_for('static',filename='icon.jpg') }}" class="logo">
                 <span class="name"><a href="#">Silaeder Projects</a></span>
+                <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 <ul class="nav">
                     <li><a href="#" class="register"><span>Log In</span></a></li>
                     <li><a href="#" class="register"><span>Sign Up</span></a></li>
                 </ul>
             </nav>
         </header> 
-        <section class="cards">
-            <article class="card card--2">
-                <div class="card__img">
-                    <a href="#" class="card_link">
-                        <div class="card__img--hover"></div>
-                    </a>
+        <section>
+            <a href="#">
+                <div class="card">
+                    <div class="content">
+                        <img class="image" src="">
+                        <h2>Title</h2>
+                        <span>By name</span>
+                    </div>
                 </div>
-                <div class="card__info">
-                    <span class="card__category">Topic</span>
-                    <h3 class="card__title">Name project</h3>
-                    <span class="card__by">By <a href="#" class="card__author" title="author">Name Student</a></span>
-                </div>
-            </article>  
-            <article class="card card--2">
-                <div class="card__img">
-                    <a href="#" class="card_link">
-                        <div class="card__img--hover"></div>
-                    </a>
-                </div>
-                <div class="card__info">
-                    <span class="card__category">Topic</span>
-                    <h3 class="card__title">Name project</h3>
-                    <span class="card__by">By <a href="#" class="card__author" title="author">Name Student</a></span>
-                </div>
-            </article>  
-            
+            </a>
         </section>
     </body>
 </html>
