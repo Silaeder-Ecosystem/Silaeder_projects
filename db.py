@@ -46,8 +46,8 @@ def create_user(username, email, password, name, surname):
         return False
 
 def auth_user(username):
-    sqlite3_select_query = """Update users SET auth = true WHERE username = %s"""
-    cursor.execute(sqlite3_select_query, username)
+    sqlite3_select_query = """Update users SET auth = true WHERE username = ?"""
+    cursor.execute(sqlite3_select_query, (username,))
     return cursor.fetchall()
 
 def create_project(title, teamlead, topic, autor_usernames, descrip, dir_with_pic, video_link):
@@ -59,3 +59,26 @@ def create_project(title, teamlead, topic, autor_usernames, descrip, dir_with_pi
     #except:
      #   return False
         
+def check_auth_user(username):
+    sqlite3_select_query = """SELECT auth FROM users WHERE username = ?"""
+    cursor.execute(sqlite3_select_query, (username,))
+    sqlite_connection.commit()
+    if cursor.fetchall()[0][0]:
+        return True
+    else:
+        return False
+
+def get_email_by_username(username):
+    sqlite3_select_query = """SELECT email FROM users WHERE username = ?"""
+    cursor.execute(sqlite3_select_query, (username,))
+    sqlite_connection.commit()
+    return cursor.fetchall()
+
+def get_is_user_logged_in(username, password):
+    sqlite3_select_query = """SELECT auth FROM users WHERE username =? AND password =?"""
+    cursor.execute(sqlite3_select_query, (username, password))
+    sqlite_connection.commit()
+    if cursor.fetchall() != []:
+        return True
+    else:
+        return False
