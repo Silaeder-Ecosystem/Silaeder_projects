@@ -144,10 +144,13 @@ def confirm_email(token):
     except:
         flash('The confirmation link is invalid or has expired. Check your email')
         return redirect('/', code=302)
+    if not db.check_user_is_exist(username):
+        flash('This is link for not registered account')
+        return redirect('/regestration', code=302)
     token = jwt.encode(payload={"name": username}, key=parse_data("secret_key"))
     if db.check_auth_user(username):
         print(db.check_auth_user(username))
-        flash('Account already confirmed. Please login')
+        flash('Account already confirmed . Please login')
         return redirect('/login', code=302)
     else:
         db.auth_user(username)
