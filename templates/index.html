@@ -20,10 +20,14 @@
                 <img src="{{ url_for('static',filename='icon.jpg') }}" class="logo">
                 <span class="name"><a href="#">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
-                <ul class="nav">
-                    <li><a href="/login" class="register"><span>Log In</span></a></li>
-                    <li><a href="/regestration" class="register"><span>Sign Up</span></a></li>
-                </ul>
+                <div class="dropdown">
+                    <span>Н</span>                  
+                    <div class="dropdown-content">
+                        <a href="#">Create project</a>
+                        <a href="#">My projects</a>
+                        <a href="#" style="color: red;">Log Out</a>
+                    </div>
+                </div>
             </nav>
         </header> 
         <section>

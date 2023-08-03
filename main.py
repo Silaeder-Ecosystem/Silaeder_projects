@@ -59,10 +59,7 @@ def check_jwt(token, username):
 
 @app.route('/', methods=['GET'])
 def main():
-    if (db.create_project("Silaeder Projectssssssssssssssss", "ILYASTARCEK", "ICT", "ILYASTARCEK, NICITATURBOBOY", "site_for_Silaeder_projects", "https://silaeder.com", "github") != True):
-        print("aguzog")
-    ans = db.get_all_projects()
-    return render_template("index.html", ans = ans)
+    return "HELLO"
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -158,5 +155,40 @@ def confirm_email(token):
         resp = make_response(redirect("/", code=302))
         resp.set_cookie("jwt", token)
         return resp
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    resp = make_response(redirect("/", code=302))
+    resp.set_cookie("jwt", "")
+    return resp
+
+@app.route('/myprojects/new', methods=['GET', 'POST'])
+def new_projects():
+    if (request.method == "GET"):
+        return render_template("new_project.html")
+    else:
+        form = request.form
+        if db.create_project(form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"]) == False:
+            flash('This project already exists')
+            return redirect("/myprojects/new", code=302)
+        flash('Project created')
+        return redirect("/projects", code=302)
+
+@app.route('/projects', methods=['GET'])
+def get_projects():
+    if (db.create_project("Silaeder Projectssssssssssssssss", "ILYASTARCEK", "ICT", "ILYASTARCEK, NICITATURBOBOY", "site_for_Silaeder_projects", "https://silaeder.com", "github") != True):
+        print("aguzog")
+    ans = db.get_all_projects()
+    return render_template("index.html", ans = ans)
+
+@app.route('/projects/<id>', methods=['GET'])
+def get_project(id):
+    ans = db.get_project_by_id(id)
+    return render_template("project.html", ans = ans)
+
+@app.route('/projects/<id>/edit', methods=['GET', 'POST'])
+def edit_project(id):
+    ans = db.get_project_by_id(id)
+    return render_template("edit_project.html", ans = ans)
 
 app.run("0.0.0.0", port=5678, debug=True)
