@@ -4,6 +4,7 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;700&family=Dosis:wght@400;500;800&family=Rubik+Bubbles&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;700&family=Dosis:wght@400;500;800&family=Rubik+Bubbles&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa&display=swap');
 
 *{
     box-sizing: border-box;
@@ -59,28 +60,6 @@ a {
     text-decoration: none;
     color: #000;
     text-align: center;
-}
-
-.register {
-    font-family: 'Spoof Trial', sans-serif;
-    position: relative;
-    font-size: 2.7vh;
-    margin: 0 auto;
-    padding: 0;
-    height: 40px;
-    width: 130px;
-    border: #c3ad01 solid 1.5px;
-    border-radius: 7px;
-    display: inline-flex;
-    text-align: center;
-    align-items: center;   
-    justify-content: center;
-    white-space: nowrap;
-    background-color: #edd200
-}
-
-.register:hover {
-    background-color: #c3ad01;  
 }
 
 .nav {
@@ -194,7 +173,7 @@ section {
 }
 
 .search[type=text] {
-    margin-left: 27%;
+    margin-left: 34.5%;
     width: 20%;
     display: flex;
     box-sizing: border-box;
@@ -224,4 +203,61 @@ section {
     font-size: 16px auto;
 }
 
+.dropdown {
+    border-radius: 100%;
+    border: #c3ad01 solid 1.5px;
+    background-color: #cdcdcd;
+    display: flex;
+    justify-content: center;
+    height: 40%;
+    align-content: center;
+    flex-wrap: wrap;
+    width: 4%;
+    margin-left: 1%;
+    margin-top: 0.5%;
+}
 
+.dropdown span {
+    font-size: 200%;
+    font-family: 'Comfortaa', cursive;
+    color: #5b5b5b;
+    margin-top: 5%;
+}
+
+.dropdown-content {
+    border-radius: 7px;
+    margin-right: 1.2%;
+    margin-top: 6.9%;
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content::after {
+    content: '';
+    border: 12px solid transparent;
+    border-bottom: 12px solid rgb(255, 255, 255);
+    position: absolute;    
+    width: 0;
+    right: 15%;
+    bottom: calc(100%);  
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-radius: 7px;
+    font-family: 'Comfortaa', cursive;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1;}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
