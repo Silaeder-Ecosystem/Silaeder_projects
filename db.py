@@ -63,10 +63,13 @@ def check_auth_user(username):
     sqlite3_select_query = """SELECT auth FROM users WHERE username = ?"""
     cursor.execute(sqlite3_select_query, (username,))
     sqlite_connection.commit()
-    if cursor.fetchall()[0][0]:
+    try:
+        if cursor.fetchall()[0][0]:
+            return True
+        else:
+            return False
+    except:
         return True
-    else:
-        return False
 
 def get_email_by_username(username):
     sqlite3_select_query = """SELECT email FROM users WHERE username = ?"""
@@ -82,3 +85,12 @@ def get_is_user_logged_in(username, password):
         return True
     else:
         return False
+    
+def check_user_is_exist(username):
+    sqlite3_select_query = """SELECT username FROM users WHERE username =?"""
+    cursor.execute(sqlite3_select_query, (username,))
+    sqlite_connection.commit()
+    if cursor.fetchall() == []:
+        return False
+    else:
+        return True
