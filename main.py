@@ -33,21 +33,11 @@ def send_email(to, subject, template):
     mail_sender.send(msg)
 
 def generate_confirmation_token(email):
-    serializer = URLSafeTimedSerializer(parse_data('secret_key'))
-    return serializer.dumps(email, salt=parse_data('salt_password'))
+    return jwt.encode(payload={"name": email}, key=parse_data("secret_key"))
 
 
-def confirm_token(token, expiration=3600):
-    serializer = URLSafeTimedSerializer(parse_data('secret_key'))
-    try:
-        email = serializer.loads(
-            token,
-            salt=app.config['salt_password'],
-            max_age=expiration
-        )
-    except:
-        return False
-    return email
+def confirm_token(token):
+    return jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")["name"]
 
 def parse_data(field):
     file = open("config.json")
@@ -83,7 +73,15 @@ def login():
         login = request.form["login"]
         password = request.form["password"]
 
-        #code will be here, when login.html will be done
+        if db.get_is_user_logged_in(login, password):
+            token = jwt.encode(payload={"name": login}, key=parse_data("secret_key"))
+            resp = make_response(redirect("/"))
+            resp.set_cookie("jwt", token)
+            return resp
+        else:
+            flash('Wrong login or password')
+            return redirect("/login", code=302)
+
 
 @app.route('/regestration', methods=['GET', 'POST'])
 def register():
@@ -108,49 +106,54 @@ def register():
 
         if ( hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters and form["password"] == form["password2"]):
             if not re.match(r"[^@]+@[^@]+\.[^@]+", form["email"]):
-                flash('This email is not valid', 'error')
+                flash('You write incorrect email')
                 return redirect("/regestration", code=302)
-
-            if parse.parse_csv().index(form["email"]) == -1:
-                flash('This is not silaeder email. Check it from Silaeder google sheet or ask administrator (@ilyastarcek), if your email is not there', 'error')
+            try:
+                if parse.parse_csv().index(form["email"]) == -1:
+                    flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
+                    return redirect("/regestration", code=302)
+            except:
+                flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
                 return redirect("/regestration", code=302)
-            
             if db.create_user(form['username'], form["email"], form['password'], form['name'], form['surname']) == False:
-                flash('This username or email already exists', 'error')
-                return redirect("/regestratio", code=302)
+                flash('This username or email already exists')
+                return redirect("/regestration", code=302)
             
-            token = jwt.encode(payload={"name": form["username"]}, key=parse_data("secret_key"))
-            
+            flash('A confirmation email has been sent via email')
             resp = make_response(redirect("/", code=302))
-            resp.set_cookie("jwt", token)
+            
 
-            etoken = generate_confirmation_token(form["email"])
+            etoken = generate_confirmation_token(form["username"])
             confirm_url = f'http://127.0.0.1:5678/confirm/{etoken}'
             html = render_template('mail.html', confirm_url=confirm_url)
             subject = "Please confirm your email"
             send_email(form['email'], subject, html)
 
-
-            flash('A confirmation email has been sent via email.', 'success')
             return resp
         
         else:
-            flash('You write incorrect password.', 'error')
+            flash('You write incorrect password')
             return redirect("/regestration", code=302)
 
-@app.route('/confirm/<token>')
+@app.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
+    print(token)
     try:
-        email = confirm_token(token)
+        username = confirm_token(token)
+        print(username)
     except:
-        flash('The confirmation link is invalid or has expired.', 'danger')
-    token = jwt.encode(payload={"name": form["username"]}, key=parse_data("secret_key"))
-    if db.get_user_by_username(payload['name']) != []:
-        flash('Account already confirmed. Please login.', 'success')
+        flash('The confirmation link is invalid or has expired. Check your email')
+        return redirect('/', code=302)
+    token = jwt.encode(payload={"name": username}, key=parse_data("secret_key"))
+    if db.check_auth_user(username):
+        print(db.check_auth_user(username))
+        flash('Account already confirmed. Please login')
         return redirect('/login', code=302)
     else:
-        flash('You have confirmed your account. Thanks!', 'success')
-        db.auth_user(payload['name'])
-    return redirect('/')
+        db.auth_user(username)
+        flash('You have confirmed your account. Thanks!')
+        resp = make_response(redirect("/", code=302))
+        resp.set_cookie("jwt", token)
+        return resp
 
 app.run("0.0.0.0", port=5678, debug=True)

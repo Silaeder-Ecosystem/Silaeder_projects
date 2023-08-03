@@ -97,7 +97,7 @@ a {
     border: 1px solid rgb(220, 219, 235);
     border-radius: 7px;
     font-size: 13px;
-    padding: 10px;
+    padding: 3.5%;
     color: #000;
     transition: all .15s ease-in;
 }

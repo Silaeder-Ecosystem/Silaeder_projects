@@ -8,13 +8,20 @@
         <title>Silaeder Projects | Витрина проектов Силаэдра</title>
     </head>
     <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <header class="site-header">
             <nav class="site-navigation">
                 <img src="{{ url_for('static',filename='icon.jpg') }}" class="logo">
                 <span class="name"><a href="#">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 <ul class="nav">
-                    <li><a href="/regestration" class="register"><span>Log In</span></a></li>
+                    <li><a href="/login" class="register"><span>Log In</span></a></li>
                     <li><a href="/regestration" class="register"><span>Sign Up</span></a></li>
                 </ul>
             </nav>

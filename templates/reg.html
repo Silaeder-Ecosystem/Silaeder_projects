@@ -22,7 +22,14 @@
     </head>
 
     <body>
-
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <script>alert(msg);</script>
         <div class="main">
 
             <form class="register-form" action="/regestration" method="post">
@@ -83,9 +90,9 @@
 
             <div class="exit-div">
 
-                <a href="index.html" class="link-exit">
+                <a href="/" class="link-exit">
 
-                    <img src="Arrow Exit Icon.svg" class="exit-icon">
+                    <img src="{{ url_for('static',filename='Arrow Exit Icon.svg') }}" class="exit-icon">
 
                 </a>
 
