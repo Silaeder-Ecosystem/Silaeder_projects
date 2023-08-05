@@ -5,7 +5,7 @@ sqlite_connection = sqlite3.connect('db.db', check_same_thread=False)
 cursor = sqlite_connection.cursor()
 
 def create_all():
-    sqlite_select_query = ["""CREATE TABLE IF NOT EXISTS projects(id SEREAL, autor_usernames TEXT, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT);""", 
+    sqlite_select_query = ["""CREATE TABLE IF NOT EXISTS projects(id SEREAL, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT);""", 
 """CREATE TABLE IF NOT EXISTS users(id SEREAL, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);"""]
     cursor.execute(sqlite_select_query[0])
     cursor.execute(sqlite_select_query[1])
@@ -49,15 +49,6 @@ def auth_user(username):
     sqlite3_select_query = """Update users SET auth = true WHERE username = ?"""
     cursor.execute(sqlite3_select_query, (username,))
     return cursor.fetchall()
-
-def create_project(title, teamlead, topic, autor_usernames, descrip, dir_with_pic, video_link):
-    #try:
-        sqlite3_insert_query = """INSERT INTO projects (autor_usernames, title, descrip, dir_with_pic, video_link, topic, teamlead) VALUES (?, ?, ?, ?, ?, ?, ?)"""
-        cursor.execute(sqlite3_insert_query, (autor_usernames, title, descrip, dir_with_pic, video_link, topic, teamlead))
-        sqlite_connection.commit()
-        return True
-    #except:
-     #   return False
         
 def check_auth_user(username):
     sqlite3_select_query = """SELECT auth FROM users WHERE username = ?"""
@@ -94,3 +85,76 @@ def check_user_is_exist(username):
         return False
     else:
         return True
+    
+def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
+    try:
+        sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (?,?,?,?,?,?,?,?)"""
+        cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links))
+        sqlite_connection.commit()
+        return True
+    except:
+        return False
+    
+def get_project_by_id(id):
+    sqlite3_select_query = """SELECT * FROM projects WHERE id =?"""
+    cursor.execute(sqlite3_select_query, (id,))
+    sqlite_connection.commit()
+    return cursor.fetchall()
+
+def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
+    try:
+        sqlite3_update_query = """UPDATE projects SET title =?, descrip =?, teamlead =?, autor_usernames =?, video_link =?, dir_with_pic =?, topic =?, main_pic_path =?, links =? WHERE id =?"""
+        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, id))
+        sqlite_connection.commit()
+        return True
+    except:
+        return False
+    
+def get_all_usernames():
+    sqlite3_select_query = """SELECT username FROM users"""
+    cursor.execute(sqlite3_select_query)
+    sqlite_connection.commit()
+    return cursor.fetchall()
+
+def get_user_id_by_username(username):
+    sqlite3_select_query = """SELECT id FROM users WHERE username =?"""
+    cursor.execute(sqlite3_select_query, (username,))
+    sqlite_connection.commit()
+    return cursor.fetchall()
+
+def get_projects_by_username(username):
+    sqlite3_select_query = """SELECT * FROM projects WHERE array_contains(autor_usernames, ?) != NULL ORDER BY id"""
+    cursor.execute(sqlite3_select_query, (username,))
+    sqlite_connection.commit()
+    return cursor.fetchall()
+
+def delete_project(id):
+    try:
+        sqlite3_delete_query = """DELETE FROM projects WHERE id =?"""
+        cursor.execute(sqlite3_delete_query, (id,))
+        sqlite_connection.commit()
+        return True
+    except:
+        return False
+    
+def delete_user(id):
+    try:
+        sqlite3_delete_query = """DELETE FROM users WHERE id =?"""
+        cursor.execute(sqlite3_delete_query, (id,))
+        sqlite_connection.commit()
+        return True
+    except:
+        return False
+    
+def delete_all():
+    try:
+        sqlite3_delete_query = """DELETE FROM projects"""
+        cursor.execute(sqlite3_delete_query)
+        sqlite_connection.commit()
+        sqlite3_delete_query = """DELETE FROM users"""
+        cursor.execute(sqlite3_delete_query)
+        sqlite_connection.commit()
+        return True
+    except:
+        return False
+    

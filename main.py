@@ -2,11 +2,11 @@ from flask import Flask, request, render_template, redirect, make_response, flas
 import db as db
 import jwt
 import json
-#from email import send_email
-from itsdangerous import URLSafeTimedSerializer
 import parse
 from flask_mail import Message, Mail
 import re
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 
@@ -20,8 +20,15 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'silaederprojects@gmail.com'  
 app.config['MAIL_DEFAULT_SENDER'] = 'silaederprojects@gmail.com'  
 app.config['MAIL_PASSWORD'] = 'waduszxztipcdeyd'  
+app.config['UPLOAD_FOLDER'] = './static/uploads'
+
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 mail_sender = Mail(app)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def send_email(to, subject, template):
     msg = Message(
@@ -168,11 +175,25 @@ def new_projects():
         return render_template("new_project.html")
     else:
         form = request.form
-        if db.create_project(form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"]) == False:
-            flash('This project already exists')
-            return redirect("/myprojects/new", code=302)
-        flash('Project created')
-        return redirect("/projects", code=302)
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            try:
+                if db.create_project(form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links']) == False:
+                    flash('This project already exists')
+                    return redirect("/myprojects/new", code=302)
+            except:
+                flash('You fill not all fields')
+                return redirect("/myprojects/new", code=302)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash('Project created')
+            return redirect("/myprojects", code=302)
 
 @app.route('/projects', methods=['GET'])
 def get_projects():
@@ -188,7 +209,18 @@ def get_project(id):
 
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
-    ans = db.get_project_by_id(id)
-    return render_template("edit_project.html", ans = ans)
+    form = request.form
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        db.update_project(id, form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links'])
+
 
 app.run("0.0.0.0", port=5678, debug=True)
