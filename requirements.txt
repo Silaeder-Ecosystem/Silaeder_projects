@@ -1,0 +1,6 @@
+Flask==2.3.2
+Flask-Mail==0.9.1
+psycopg2-binary==2.9.6
+PyJWT==2.3.0
+jsons
+Werkzeug
