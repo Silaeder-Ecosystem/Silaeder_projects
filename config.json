@@ -1,3 +1,3 @@
 {
-    "secret_key": "abubus_yarik", "salt_password": "salt_very_sweet;_bogdan", "mail": "silaeder@projects.com", "db_host": "db", "db_port": "5432", "db_user": "postgres", "db_name": "silaeder_projects", "db_pass": "loHAXf0HTg8kamLvi1T03A-lW"
+    "secret_key": "abubus_yarik", "salt_password": "salt_very_sweet;_bogdan", "mail": "silaeder@projects.com"
 }

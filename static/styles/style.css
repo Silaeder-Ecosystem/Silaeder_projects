@@ -209,12 +209,13 @@ section {
     background-color: #cdcdcd;
     display: flex;
     justify-content: center;
-    height: 60%;
+    height: 40%;
     align-content: center;
     flex-wrap: wrap;
-    width: 6%;
+    width: 4%;
     margin-left: 1%;
     margin-top: 0.5%;
+    margin-right: 1%;
 }
 
 .dropdown span {
@@ -227,7 +228,7 @@ section {
 .dropdown-content {
     border-radius: 7px;
     margin-right: 1.2%;
-    margin-top: 5%;
+    margin-top: 6.9%;
     display: none;
     position: absolute;
     right: 0;
