@@ -62,24 +62,6 @@ a {
     text-align: center;
 }
 
-.register {
-    font-family: 'Spoof Trial', sans-serif;
-    font-size: 18px;
-    height: 40px;
-    width: 130px;
-    border: #c3ad01 solid 1.5px;
-    border-radius: 7px;
-    display: inline-flex;
-    text-align: center;
-    align-items: center;   
-    justify-content: center;
-    background-color: #edd200
-}
-
-.register:hover {
-    background-color: #c3ad01;  
-}
-
 .nav {
     display: inline-block;
     list-style-type: none;
@@ -279,3 +261,4 @@ section {
 .dropdown:hover .dropdown-content {
     display: block;
 }
+
