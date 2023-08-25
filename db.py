@@ -17,57 +17,53 @@ conn = psycopg2.connect(
     password=password
 )
 
+conn.autocommit = True
+
 cursor = conn.cursor()
 
-def create_all():
-    sqlite_select_query = ["""CREATE TABLE IF NOT EXISTS projects(id SEREAL, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT);""", 
-"""CREATE TABLE IF NOT EXISTS users(id SEREAL, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);"""]
-    cursor.execute(sqlite_select_query[0])
-    cursor.execute(sqlite_select_query[1])
-    conn.commit()
-    return
+conn.rollback()
+
+def parse_data(field):
+    file = open("config.json")
+    data = json.load(file)[field]
+
+    return data
 
 def get_all_projects():
-    sqlite_select_query = """SELECT title, teamlead, topic, id FROM projects"""
+    sqlite_select_query = """SELECT title, teamlead, topic, id, main_pic_path FROM projects;"""
     cursor.execute(sqlite_select_query)
     conn.commit()
     return cursor.fetchall()
 
-def get_project_by_id(id):
-    sqlite_select_query = """SELECT title, teamlead, topic FROM projects WHERE id = %s"""
-    cursor.execute(sqlite_select_query, id)
-    conn.commit()
-    return cursor.fetchall()
-
 def get_user_by_username(username):
-    sqlite_select_query = """SELECT username, name, surname FROM users WHERE username = %s"""
+    sqlite_select_query = """SELECT username, name, surname FROM users WHERE username = %s;"""
     cursor.execute(sqlite_select_query, username)
     conn.commit()
     return cursor.fetchall()
 
 def get_user_by_id(id):
-    sqlite_select_query = """SELECT username, name, surname FROM users WHERE id = %s AND auth = true"""
+    sqlite_select_query = """SELECT username, name, surname FROM users WHERE id = %s AND auth = true;"""
     cursor.execute(sqlite_select_query, id)
     conn.commit()
     return cursor.fetchall()
 
 def create_user(username, email, password, name, surname):
-    try:
-        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (%s, %s, %s, %s, %s, false)"""
-        cursor.execute(sqlite3_insert_query, (username, email, password, name, surname))
+    #try:
+        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (%s, %s, %s, %s, %s, false);"""
+        cursor.execute(sqlite3_insert_query, (username, email, password, name, surname, ))
         conn.commit()
         return True
-    except:
+    #except:
         return False
 
 def auth_user(username):
-    sqlite3_select_query = """Update users SET auth = true WHERE username = %s"""
-    cursor.execute(sqlite3_select_query, (username,))
-    return cursor.fetchall()
+    sqlite3_select_query = """Update users SET auth = true WHERE username = %s;"""
+    cursor.execute(sqlite3_select_query, (username, ))
+    return
         
 def check_auth_user(username):
-    sqlite3_select_query = """SELECT auth FROM users WHERE username = %s"""
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = """SELECT auth FROM users WHERE username = %s;"""
+    cursor.execute(sqlite3_select_query, (username, ))
     conn.commit()
     try:
         if cursor.fetchall()[0][0]:
@@ -78,23 +74,24 @@ def check_auth_user(username):
         return True
 
 def get_email_by_username(username):
-    sqlite3_select_query = """SELECT email FROM users WHERE username = %s"""
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = """SELECT email FROM users WHERE username = %s;"""
+    cursor.execute(sqlite3_select_query, (username, ))
     conn.commit()
     return cursor.fetchall()
 
 def get_is_user_logged_in(username, password):
-    sqlite3_select_query = """SELECT auth FROM users WHERE username =%s AND password =%s"""
-    cursor.execute(sqlite3_select_query, (username, password))
+    sqlite3_select_query = """SELECT auth FROM users WHERE username =%s AND password =%s;"""
+    cursor.execute(sqlite3_select_query, (username, password, ))
     conn.commit()
-    if cursor.fetchall() != []:
-        return True
+    ans = cursor.fetchall()
+    if ans != []:
+        return ans[0]
     else:
         return False
     
 def check_user_is_exist(username):
-    sqlite3_select_query = """SELECT username FROM users WHERE username =%s AND auth = true"""
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = """SELECT username FROM users WHERE username =%s AND auth = true;"""
+    cursor.execute(sqlite3_select_query, (username, ))
     conn.commit()
     if cursor.fetchall() == []:
         return False
@@ -102,58 +99,55 @@ def check_user_is_exist(username):
         return True
     
 def check_not_auth_user_is_exist(username):
-    sqlite3_select_query = """SELECT username FROM users WHERE username =%s"""
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = """SELECT username FROM users WHERE username =%s;"""
+    cursor.execute(sqlite3_select_query, (username, ))
     conn.commit()
-    if cursor.fetchall() == []:
-        return False
-    else:
-        return True
+    return cursor.fetchall()
 
 def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
-    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     print(sqlite3_select_query)
     cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, ))
     conn.commit()
     return True
     
 def get_project_by_id(id):
-    sqlite3_select_query = """SELECT * FROM projects WHERE id =%s"""
-    cursor.execute(sqlite3_select_query, (id,))
+    sqlite3_select_query = """SELECT * FROM projects WHERE id =%s;"""
+    cursor.execute(sqlite3_select_query, (id, ))
     conn.commit()
     return cursor.fetchall()
 
 def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
     try:
-        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s WHERE id =%s"""
-        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, id))
+        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s WHERE id =%s;"""
+        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, id, ))
         conn.commit()
         return True
     except:
         return False
     
 def get_all_usernames():
-    sqlite3_select_query = """SELECT username FROM users"""
+    sqlite3_select_query = """SELECT username FROM users;"""
     cursor.execute(sqlite3_select_query)
     conn.commit()
     return cursor.fetchall()
 
 def get_user_id_by_username(username):
-    sqlite3_select_query = """SELECT id FROM users WHERE username =%s"""
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = """SELECT id FROM users WHERE username =%s;"""
+    cursor.execute(sqlite3_select_query, (username, ))
     conn.commit()
     return cursor.fetchall()
 
 def get_projects_by_username(username):
-    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN autor_usernames'
-    cursor.execute(query, username)
+    query= 'SELECT title, teamlead, topic FROM projects WHERE %s = ANY(autor_usernames);'
+    cursor.execute(query, (username, ))
     conn.commit()
     return cursor.fetchall()
 
 def delete_project(id):
     try:
-        sqlite3_delete_query = """DELETE FROM projects WHERE id =%s"""
-        cursor.execute(sqlite3_delete_query, (id,))
+        sqlite3_delete_query = """DELETE FROM projects WHERE id =%s;"""
+        cursor.execute(sqlite3_delete_query, (id, ))
         conn.commit()
         return True
     except:
@@ -161,8 +155,8 @@ def delete_project(id):
     
 def delete_user(id):
     try:
-        sqlite3_delete_query = """DELETE FROM users WHERE id =%s"""
-        cursor.execute(sqlite3_delete_query, (id,))
+        sqlite3_delete_query = """DELETE FROM users WHERE id =%s;"""
+        cursor.execute(sqlite3_delete_query, (id, ))
         conn.commit()
         return True
     except:
@@ -170,10 +164,10 @@ def delete_user(id):
     
 def delete_all():
     try:
-        sqlite3_delete_query = """DELETE FROM projects"""
+        sqlite3_delete_query = """DELETE FROM projects;"""
         cursor.execute(sqlite3_delete_query)
         conn.commit()
-        sqlite3_delete_query = """DELETE FROM users"""
+        sqlite3_delete_query = """DELETE FROM users;"""
         cursor.execute(sqlite3_delete_query)
         conn.commit()
         return True
@@ -181,8 +175,8 @@ def delete_all():
         return False
     
 def is_user_in_project(id, username):
-    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN projects.autor_usernames'
-    cursor.execute(query, (username, id))
+    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN projects.autor_usernames;'
+    cursor.execute(query, (username, id, ))
     conn.commit()
     if cursor.fetchall() != []:
         return True
@@ -190,10 +184,19 @@ def is_user_in_project(id, username):
         return False
     
 def is_user_teamlead(id, username):
-    sqlite3_select_query = """SELECT teamlead FROM projects WHERE id =%s"""
-    cursor.execute(sqlite3_select_query, (id,))
+    sqlite3_select_query = """SELECT teamlead FROM projects WHERE id =%s;"""
+    cursor.execute(sqlite3_select_query, (id, ))
     conn.commit()
     if cursor.fetchall()[0][0] == username:
         return True
     else:
         return False
+
+def create_all():
+    sqlite_select_query = ["""CREATE TABLE IF NOT EXISTS projects(id SEREAL, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT);""", 
+"""CREATE TABLE IF NOT EXISTS users(id SEREAL, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);"""]
+    cursor.execute(sqlite_select_query[0])
+    cursor.execute(sqlite_select_query[1])
+    conn.commit()
+    create_user("admin", "silaederprojects@gmail.com", parse_data("secret_key"), "Admin", "Adminovich")
+    return

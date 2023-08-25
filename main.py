@@ -12,6 +12,8 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
+db.delete_all()
+
 db.create_all()
 
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
@@ -27,8 +29,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 mail_sender = Mail(app)
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def send_email(to, subject, template):
     msg = Message(
@@ -44,9 +45,10 @@ def generate_confirmation_token(email):
 
 
 def confirm_token(token):
-    if token == None:
-        return False
-    return jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")["name"]
+    try:
+    	return jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")["name"]
+    except:
+    	return False
 
 def parse_data(field):
     file = open("config.json")
@@ -55,16 +57,15 @@ def parse_data(field):
     return data
 
 def check_jwt(token, username):
-    if token:
-        try:
-            payload = jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")
-        except:
-            return False
+    try:
+        payload = jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")
+    except:
+        return False
         
-        if payload["name"] == username:
-            return True
-        else:
-            return False
+    if payload["name"] == username:
+        return True
+    else:
+        return False
 
 @app.route('/', methods=['GET'])
 def main():
@@ -91,7 +92,7 @@ def login():
             return redirect("/login", code=302)
 
 
-@app.route('/regestration', methods=['GET', 'POST'])
+@app.route('/registration', methods=['GET', 'POST'])
 def register():
     if (request.method == "GET"):
         return render_template("reg.html")
@@ -115,24 +116,24 @@ def register():
         if ( hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters and form["password"] == form["password2"]):
             if not re.match(r"[^@]+@[^@]+\.[^@]+", form["email"]):
                 flash('You write incorrect email')
-                return redirect("/regestration", code=302)
+                return redirect("/registration", code=302)
             try:
                 if parse.parse_csv().index(form["email"]) == -1:
                     flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
-                    return redirect("/regestration", code=302)
+                    return redirect("/registration", code=302)
             except:
                 flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
-                return redirect("/regestration", code=302)
+                return redirect("/registration", code=302)
             if db.create_user(form['username'], form["email"], form['password'], form['name'], form['surname']) == False:
                 flash('This username or email already exists')
-                return redirect("/regestration", code=302)
+                return redirect("/registration", code=302)
             
             flash('A confirmation email has been sent via email')
-            resp = make_response(redirect("/", code=200))
+            resp = make_response(redirect("/", code=302))
             
 
             etoken = generate_confirmation_token(form["username"])
-            confirm_url = f'http://127.0.0.1:5678/confirm/{etoken}'
+            confirm_url = f'http://{parse_data("host")}/confirm/{etoken}'
             html = render_template('mail.html', confirm_url=confirm_url)
             subject = "Please confirm your email"
             send_email(form['email'], subject, html)
@@ -141,20 +142,20 @@ def register():
         
         else:
             flash('You write incorrect password')
-            return redirect("/regestration", code=302)
+            return redirect("/registration", code=302)
 
 @app.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
     print(token)
-    #try:
-    username = confirm_token(token)
-    print(username)
-    '''except:
-        flash('The confirmation link is invalid or has expired. Check your email')
-        return redirect('/', code=302)'''
-    if not db.check_not_auth_user_is_exist(username):
-        flash('This is link for not registered')
-        return redirect('/regestration', code=302)
+    try:
+        username = confirm_token(token)
+        print(username)
+    except:
+        flash('The confirmation link is invalid. Check your email')
+        return redirect('/', code=302)
+    if db.check_not_auth_user_is_exist(username) == []:
+        flash('This is link for not registered account')
+        return redirect('/registration', code=302)
     token = jwt.encode(payload={"name": username}, key=parse_data("secret_key"))
     if db.check_auth_user(username):
         print(db.check_auth_user(username))
@@ -163,22 +164,19 @@ def confirm_email(token):
     else:
         db.auth_user(username)
         flash('You have confirmed your account. Thanks!')
-        resp = make_response(redirect("/projects", code=302))
+        resp = make_response(redirect("/", code=302))
         resp.set_cookie("jwt", token)
         return resp
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    resp = make_response(redirect("/projects", code=200))
+    resp = make_response(redirect("/", code=302))
     resp.set_cookie("jwt", "")
     return resp
 
 @app.route('/myprojects/new', methods=['GET', 'POST'])
 def new_projects():
     if (request.method == "GET"):
-        if confirm_token(request.cookies.get("jwt")):
-            flash('You are not logged in')
-            return render_template("login.html")
         return render_template("new_project.html")
     else:
         form = request.form
@@ -191,12 +189,8 @@ def new_projects():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            for i in form['colaborators']:
-                if not db.check_user_is_exist(i):
-                    flash(f'User {i} is not registered or conformered account. Please ask him finish register or delete his account from this project')
-                    return redirect('/myprojects', code=302)
             try:
-                if db.create_project(form['title'], form['description'], form['teamlead'], form['colaborators'], form['video_url'], form['images_link'], form["topic"], filename, form['links']) == False:
+                if not db.create_project(form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links']) == False:
                     flash('This project already exists')
                     return redirect("/myprojects/new", code=302)
             except:
@@ -204,37 +198,26 @@ def new_projects():
                 return redirect("/myprojects/new", code=302)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             flash('Project created')
-            return redirect("/myprojects", code=200)
+            return redirect("/myprojects", code=302)
 
 @app.route('/projects', methods=['GET'])
 def get_projects():
     if (db.create_project("Silaeder Projectssssssssssssssss", "ilyastarcek", "ICT", ['ilyastarcek', 'NICITATURBOBOY'], "site_for_Silaeder_projects", "https://silaeder.com", "github", 'icon.jpg', '') != True):
         print("aguzog")
     ans = db.get_all_projects()
-    return render_template("index.html", ans = ans)
+    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
 
 @app.route('/projects/<id>', methods=['GET'])
 def get_project(id):
     ans = db.get_project_by_id(id)
-    try:
-        username = confirm_email(request.cookies.get('jwt'))
-        user = db.is_user_in_project(id, username)
-    except:
-        user = False
-    return render_template("project.html", ans = ans, user = user)
+    return render_template("project.html", ans = ans)
 
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
-    if request.method == "GET":
-        if confirm_token(request.cookies.get("jwt")):
-            flash('You are not logged in')
-            return render_template("login.html")
+    if (request.method == 'GET'):
         ans = db.get_project_by_id(id)
-        return render_template("edit_project.html", ans = ans)
+        return render_template("project.html", ans = ans)
     else:
-        if confirm_token(request.cookies.get("jwt")):
-            flash('You are not logged in')
-            return render_template("login.html")
         form = request.form
         if 'file' not in request.files:
             flash('No file part')
@@ -247,24 +230,14 @@ def edit_project(id):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             db.update_project(id, form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links'])
-            return redirect("/myprojects", code=200)
-
-@app.route('/projects/<id>/delete', methods=['POST'])
-def delete_project(id):
-    if confirm_token(request.cookies.get("jwt")):
-        flash('You are not logged in')
-        return render_template("login.html")
-    if db.is_user_teamlead(id, confirm_token(request.cookies.get("jwt"))):
-        db.delete_project(id)
-        flash('Project deleted')
-        return redirect("/myprojects", code=302)
-    else:
-        flash('You are not owner of this project. Ask teamlead of this project to delete it')
-        return redirect("/myprojects", code=302)
 
 @app.route('/myprojects', methods=['GET'])
 def get_my_projects():
-    ans = db.get_projects_by_username(confirm_token(request.cookies.get("jwt")))
-    return render_template("myprojects.html", ans = ans)
-     
+    token = confirm_token(request.cookies.get("jwt"))
+    if not token:
+        flash("You are not logged in")
+        return redirect('/login') 
+    ans = db.get_projects_by_username(token)
+    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
+
 app.run("0.0.0.0", port=18001, debug=True)
