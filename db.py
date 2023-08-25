@@ -17,8 +17,6 @@ conn = psycopg2.connect(
     password=password
 )
 
-conn.autocommit(True)
-
 cursor = conn.cursor()
 
 def create_all():
@@ -30,7 +28,7 @@ def create_all():
     return
 
 def get_all_projects():
-    sqlite_select_query = """SELECT title, teamlead, topic FROM projects"""
+    sqlite_select_query = """SELECT title, teamlead, topic, id FROM projects"""
     cursor.execute(sqlite_select_query)
     conn.commit()
     return cursor.fetchall()
@@ -113,12 +111,9 @@ def check_not_auth_user_is_exist(username):
         return True
 
 def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
-    placeholder= '%s' # For SQLite. See DBAPI paramstyle.
-    placeholders= ','.join(unused for unused in autor_usernames)
-    print(placeholders)
-    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (%s,%s,%s,'{%s}',%s,%s,%s,%s,%s)""" % placeholders
+    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
     print(sqlite3_select_query)
-    cursor.execute(sqlite3_select_query, (title, descrip, teamlead, video_link, dir_with_pic, topic, main_pic_path, links, ))
+    cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, ))
     conn.commit()
     return True
     
@@ -130,10 +125,7 @@ def get_project_by_id(id):
 
 def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
     try:
-        placeholder= '%s' # For SQLite. See DBAPI paramstyle.
-        placeholders= ', '.join([placeholder for unused in autor_usernames])
-        print(placeholders)
-        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = (%s), video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s WHERE id =%s""" % placeholders
+        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s WHERE id =%s"""
         cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, id))
         conn.commit()
         return True
