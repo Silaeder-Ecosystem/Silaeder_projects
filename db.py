@@ -170,6 +170,12 @@ def delete_all():
         sqlite3_delete_query = """DELETE FROM users;"""
         cursor.execute(sqlite3_delete_query)
         conn.commit()
+        sqlite3_delete_query = """ALTER SEQUENCE projects_id_seq RESTART WITH 1"""
+        cursor.execute(sqlite3_delete_query)
+        conn.commit()
+        sqlite3_delete_query = """ALTER SEQUENCE users_id_seq RESTART WITH 1"""
+        cursor.execute(sqlite3_delete_query)
+        conn.commit()
         return True
     except:
         return False

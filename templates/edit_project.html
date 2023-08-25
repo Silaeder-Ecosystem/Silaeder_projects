@@ -8,6 +8,13 @@
         <title>Silaeder Projects | Витрина проектов Силаэдра</title>
     </head>
     <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <header class="site-header">
             <nav class="site-navigation">
                 <img src="{{ url_for('static', filaname='icon.jpg')}}" class="logo">
@@ -34,7 +41,7 @@
                 <br>  
                 <span class="titles">Участники: </span>
                 <ul id="collaborators">
-                    <li>Никита Мартьянов</li>
+                    <li>{{user}}</li>
                     <li id="addNewContext" class="menu-item-divided">+</li>
                 </ul> 
                 <br>  
