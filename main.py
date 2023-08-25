@@ -177,16 +177,22 @@ def logout():
 @app.route('/myprojects/new', methods=['GET', 'POST'])
 def new_projects():
     if (request.method == "GET"):
-        return render_template("new_project.html")
+        if (confirm_token(request.cookies.get("jwt")) != False):
+            return render_template("new_project.html", user = confirm_token(request.cookies.get("jwt")))
+        else:
+            flash("You are not logged in")
+            return redirect('/login') 
     else:
         form = request.form
-        if 'file' not in request.files:
+        print(form)
+        print(request.files)
+        if 'cover' not in request.files:
             flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
+            return redirect(f"/myprojects/new")
+        file = request.files['cover']
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return redirect(f"/myprojects/new")
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             try:
@@ -216,16 +222,16 @@ def get_project(id):
 def edit_project(id):
     if (request.method == 'GET'):
         ans = db.get_project_by_id(id)
-        return render_template("project.html", ans = ans)
+        return render_template("edit_project.html", ans = ans)
     else:
         form = request.form
-        if 'file' not in request.files:
+        if 'cover' not in request.files:
             flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
+            return redirect(f"/projects/{id}/edit")
+        file = request.files['cover']
         if file.filename == '':
             flash('No selected file')
-            return redirect(request.url)
+            return redirect(f"/projects/{id}/edit")
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
