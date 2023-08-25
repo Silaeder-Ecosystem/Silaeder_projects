@@ -3,53 +3,40 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='styles/style.css')}}">
         <link href="https://fonts.cdnfonts.com/css/spoof-trial" rel="stylesheet">
         <title>Silaeder Projects | Витрина проектов Силаэдра</title>
     </head>
     <body>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <script>alert("{{message}}");</script>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
         <header class="site-header">
             <nav class="site-navigation">
-                <img src="{{ url_for('static',filename='icon.jpg') }}" class="logo">
+                <img src="{{url_for('static', filename='./icon.jpg')}}" class="logo">
                 <span class="name"><a href="#">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 <div class="dropdown">
-                    <span>Н</span>                  
+                    <span>👤</span>                  
                     <div class="dropdown-content">
-                        <a href="#">Create project</a>
-                        <a href="#">My projects</a>
-                        <a href="#" style="color: red;">Log Out</a>
+                        <a href="/myprojects/new">Create project</a>
+                        <a href="/myprojects">My projects</a>
+                        <a href="/logout" style="color: red;">Log Out</a>
                     </div>
                 </div>
+            </div>
             </nav>
         </header> 
         <section>
-            {% for i in ans %}
             <a href="#">
                 <div class="card">
                     <div class="content">
                         <img class="image" src="">
                         <div>
-                            {% if (i[0]|length > 45) %}
-                            <div class="marquee"><span>{{i[0]}}</span></div>
-                            {% else %}
-                            <div><span>{{i[0]}}</span></div>
-                            {% endif %}
-                            <span class="topic">{{i[2]}}</span>
-                            <br>
-                            <span>By {{i[1]}}</span>
+                            <span class="topic">Topic</span>
+                            <div class="marquee"><span>Title</span></div>
+                            <span>By Name</span>
                         </div>
                     </div>
                 </div>
             </a>
-            {% endfor %}
         </section>
     </body>
 </html>
