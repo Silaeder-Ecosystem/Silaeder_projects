@@ -1,16 +1,24 @@
 import psycopg2
-import psycopg2.extras
 import json
 
 config_file = open("config.json")
 config_data = json.load(config_file)
-db_host = config_data["db_host"]
-db_port = config_data["db_port"]
-db_user = config_data["db_user"]
-db_name = config_data["db_name"]
-db_pass = config_data["db_pass"]
+host = config_data["db_host"]
+port = config_data["db_port"]
+user = config_data["db_user"]
+database = config_data["db_name"]
+password = config_data["db_pass"]
 
-conn = psycopg2.connect(host=db_host, port=db_port, user=db_user, database=db_name, password=db_pass)
+conn = psycopg2.connect(
+    host=host,
+    port=port,
+    database=database,
+    user=user,
+    password=password
+)
+
+conn.autocommit(True)
+
 cursor = conn.cursor()
 
 def create_all():
@@ -47,7 +55,7 @@ def get_user_by_id(id):
 
 def create_user(username, email, password, name, surname):
     try:
-        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (?, ?, ?, ?, ?, false)"""
+        sqlite3_insert_query = """INSERT INTO users (username, email, password, name, surname, auth) VALUES (%s, %s, %s, %s, %s, false)"""
         cursor.execute(sqlite3_insert_query, (username, email, password, name, surname))
         conn.commit()
         return True
@@ -55,12 +63,12 @@ def create_user(username, email, password, name, surname):
         return False
 
 def auth_user(username):
-    sqlite3_select_query = """Update users SET auth = true WHERE username = ?"""
+    sqlite3_select_query = """Update users SET auth = true WHERE username = %s"""
     cursor.execute(sqlite3_select_query, (username,))
     return cursor.fetchall()
         
 def check_auth_user(username):
-    sqlite3_select_query = """SELECT auth FROM users WHERE username = ?"""
+    sqlite3_select_query = """SELECT auth FROM users WHERE username = %s"""
     cursor.execute(sqlite3_select_query, (username,))
     conn.commit()
     try:
@@ -72,13 +80,13 @@ def check_auth_user(username):
         return True
 
 def get_email_by_username(username):
-    sqlite3_select_query = """SELECT email FROM users WHERE username = ?"""
+    sqlite3_select_query = """SELECT email FROM users WHERE username = %s"""
     cursor.execute(sqlite3_select_query, (username,))
     conn.commit()
     return cursor.fetchall()
 
 def get_is_user_logged_in(username, password):
-    sqlite3_select_query = """SELECT auth FROM users WHERE username =? AND password =?"""
+    sqlite3_select_query = """SELECT auth FROM users WHERE username =%s AND password =%s"""
     cursor.execute(sqlite3_select_query, (username, password))
     conn.commit()
     if cursor.fetchall() != []:
@@ -87,7 +95,7 @@ def get_is_user_logged_in(username, password):
         return False
     
 def check_user_is_exist(username):
-    sqlite3_select_query = """SELECT username FROM users WHERE username =?"""
+    sqlite3_select_query = """SELECT username FROM users WHERE username =%s AND auth = true"""
     cursor.execute(sqlite3_select_query, (username,))
     conn.commit()
     if cursor.fetchall() == []:
@@ -95,24 +103,37 @@ def check_user_is_exist(username):
     else:
         return True
     
-def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
-    try:
-        sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (?,?,?,?,?,?,?,?)"""
-        cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links))
-        conn.commit()
-        return True
-    except:
+def check_not_auth_user_is_exist(username):
+    sqlite3_select_query = """SELECT username FROM users WHERE username =%s"""
+    cursor.execute(sqlite3_select_query, (username,))
+    conn.commit()
+    if cursor.fetchall() == []:
         return False
+    else:
+        return True
+
+def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
+    placeholder= '%s' # For SQLite. See DBAPI paramstyle.
+    placeholders= ','.join(unused for unused in autor_usernames)
+    print(placeholders)
+    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links) VALUES (%s,%s,%s,'{%s}',%s,%s,%s,%s,%s)""" % placeholders
+    print(sqlite3_select_query)
+    cursor.execute(sqlite3_select_query, (title, descrip, teamlead, video_link, dir_with_pic, topic, main_pic_path, links, ))
+    conn.commit()
+    return True
     
 def get_project_by_id(id):
-    sqlite3_select_query = """SELECT * FROM projects WHERE id =?"""
+    sqlite3_select_query = """SELECT * FROM projects WHERE id =%s"""
     cursor.execute(sqlite3_select_query, (id,))
     conn.commit()
     return cursor.fetchall()
 
 def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links):
     try:
-        sqlite3_update_query = """UPDATE projects SET title =?, descrip =?, teamlead =?, autor_usernames =?, video_link =?, dir_with_pic =?, topic =?, main_pic_path =?, links =? WHERE id =?"""
+        placeholder= '%s' # For SQLite. See DBAPI paramstyle.
+        placeholders= ', '.join([placeholder for unused in autor_usernames])
+        print(placeholders)
+        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = (%s), video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s WHERE id =%s""" % placeholders
         cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, id))
         conn.commit()
         return True
@@ -126,20 +147,20 @@ def get_all_usernames():
     return cursor.fetchall()
 
 def get_user_id_by_username(username):
-    sqlite3_select_query = """SELECT id FROM users WHERE username =?"""
+    sqlite3_select_query = """SELECT id FROM users WHERE username =%s"""
     cursor.execute(sqlite3_select_query, (username,))
     conn.commit()
     return cursor.fetchall()
 
 def get_projects_by_username(username):
-    sqlite3_select_query = """SELECT * FROM projects WHERE array_contains(autor_usernames, ?) != NULL ORDER BY id"""
-    cursor.execute(sqlite3_select_query, (username,))
+    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN autor_usernames'
+    cursor.execute(query, username)
     conn.commit()
     return cursor.fetchall()
 
 def delete_project(id):
     try:
-        sqlite3_delete_query = """DELETE FROM projects WHERE id =?"""
+        sqlite3_delete_query = """DELETE FROM projects WHERE id =%s"""
         cursor.execute(sqlite3_delete_query, (id,))
         conn.commit()
         return True
@@ -148,7 +169,7 @@ def delete_project(id):
     
 def delete_user(id):
     try:
-        sqlite3_delete_query = """DELETE FROM users WHERE id =?"""
+        sqlite3_delete_query = """DELETE FROM users WHERE id =%s"""
         cursor.execute(sqlite3_delete_query, (id,))
         conn.commit()
         return True
@@ -167,3 +188,20 @@ def delete_all():
     except:
         return False
     
+def is_user_in_project(id, username):
+    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN projects.autor_usernames'
+    cursor.execute(query, (username, id))
+    conn.commit()
+    if cursor.fetchall() != []:
+        return True
+    else:
+        return False
+    
+def is_user_teamlead(id, username):
+    sqlite3_select_query = """SELECT teamlead FROM projects WHERE id =%s"""
+    cursor.execute(sqlite3_select_query, (id,))
+    conn.commit()
+    if cursor.fetchall()[0][0] == username:
+        return True
+    else:
+        return False
