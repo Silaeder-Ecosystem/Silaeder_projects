@@ -11,7 +11,7 @@
         <header class="site-header">
             <nav class="site-navigation">
                 <img src="{{url_for('static', filename='./icon.jpg')}}" class="logo">
-                <span class="name"><a href="#">Silaeder Projects</a></span>
+                <span class="name"><a href="#">{{title}}</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 {% if user %}
                 <div class="dropdown">
@@ -32,20 +32,24 @@
             </nav>
         </header> 
         <section>
-        {% for i in ans %}
-            <a href="/projects/{{i[3]}}">
-                <div class="card">
-                    <div class="content">
-                        <img class="image" src="">
-                        <div>
-                            <span class="topic">{{i[0]}}</span>
-                            <div class="marquee"><span>{{i[2]}}</span></div>
-                            <span>By {{i[1]}}'s team</span>
+        {% if ans|length == 0 %}
+            <!--very need styled text "You don't have any projects yet. Create it!"-->
+        {% else %}
+            {% for i in ans %}
+                <a href="/projects/{{i[3]}}">
+                    <div class="card">
+                        <div class="content">
+                            <img class="image" src="{{url_for('static', filename='./{{i[4]}}')}}">
+                            <div>
+                                <span class="topic">{{i[0]}}</span>
+                                <div class="marquee"><span>{{i[2]}}</span></div>
+                                <span>By {{i[1]}}'s team</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-        {% endfor %}
+                </a>
+            {% endfor %}
+        {% endif %}
         </section>
     </body>
 </html>
