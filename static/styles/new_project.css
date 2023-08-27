@@ -449,3 +449,7 @@ input[type="submit"]:hover {
     background-color: #ba0000;
 
 }
+
+.hid_inp {
+    display: none;
+}
