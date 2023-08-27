@@ -32,16 +32,19 @@
             </nav>
         </header>
         <div class="form">
-            <form action="/myprojects/new" method="post">
+            <form action="/projects/new" method="post" enctype="multipart/form-data">
                 <span class="titles">Название проекта: </span>
                 <input type="text" name="name" id="name" class="input-text" placeholder="Title"> 
                 <br>    
                 <span class="titles">Научный руководитель | тимлид: </span>
-                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name"> 
+                <input type="text" name="teamlead" id="teamlead" class="input-text" placeholder="Name"> 
                 <br>  
+                <span class="titles">Тема проекта: </span>
+                <input type="text" name="topic" id="topic" class="input-text" placeholder="Name"> 
+                <br> 
                 <span class="titles">Участники: </span>
-                <ul id="collaborators">
-                    <li>{{user}}</li>
+                <ul>
+                    <li><input class="hid_inp" name="collaborators[]" value='{{user}}'>{{user}}</input></li>
                     <li id="addNewContext" class="menu-item-divided">+</li>
                 </ul> 
                 <br>  
@@ -69,7 +72,7 @@
                 <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ...">
                 <br>
                 <input type="submit" name="submit" id="submit" value="Submit">
-                <a href="main.html" class="cancel">Cancel</a>
+                <a href="/projects" class="cancel">Cancel</a>
             </form>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -87,7 +90,7 @@
             if (e.keyCode == 13) {
                 var val = $(this).text();
                 $(this)
-                    .before('<li onclick="remove(this)">' + val + '</li>')
+                    .before('<li onclick="remove(this)"><input class="hid_inp" name="collaborators[]" value="'+ val + '" readonly>' + val + '</input></li>')
 
                     .html("+")
 

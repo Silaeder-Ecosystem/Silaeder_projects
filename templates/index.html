@@ -24,7 +24,7 @@
                 <div class="dropdown">
                     <span>👤</span>                  
                     <div class="dropdown-content">
-                        <a href="/myprojects/new">Create project</a>
+                        <a href="/projects/new">Create project</a>
                         <a href="/myprojects">My projects</a>
                         <a href="/logout" style="color: red;">Log Out</a>
                     </div>
@@ -48,8 +48,8 @@
                         <div class="content">
                             <img class="image" src="{{url_for('static', filename='./{{i[4]}}')}}">
                             <div>
-                                <span class="topic">{{i[0]}}</span>
-                                <div class="marquee"><span>{{i[2]}}</span></div>
+                                <span class="topic">{{i[2]}}</span>
+                                <div class="marquee"><span>{{i[0]}}</span></div>
                                 <span>By {{i[1]}}'s team</span>
                             </div>
                         </div>

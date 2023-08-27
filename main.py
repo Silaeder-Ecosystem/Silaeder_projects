@@ -12,9 +12,11 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-db.delete_all()
+#db.delete_all()
 
 db.create_all()
+
+#db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", '../icon.jpg', 'projects.sileder.ru', 'нет')
 
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
@@ -24,7 +26,7 @@ app.config['MAIL_DEFAULT_SENDER'] = 'silaederprojects@gmail.com'
 app.config['MAIL_PASSWORD'] = 'waduszxztipcdeyd'  
 app.config['UPLOAD_FOLDER'] = './static/uploads'
 
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 mail_sender = Mail(app)
 
@@ -174,7 +176,7 @@ def logout():
     resp.set_cookie("jwt", "")
     return resp
 
-@app.route('/myprojects/new', methods=['GET', 'POST'])
+@app.route('/projects/new', methods=['GET', 'POST'])
 def new_projects():
     if (request.method == "GET"):
         if (confirm_token(request.cookies.get("jwt")) != False):
@@ -183,33 +185,49 @@ def new_projects():
             flash("You are not logged in")
             return redirect('/login') 
     else:
+        token = confirm_token(request.cookies.get("jwt"))
+        if not token:
+            flash("You are not logged in")
+            return redirect('/login') 
         form = request.form
-        print(form)
-        print(request.files)
+        print()
+        print()
+        app.logger.debug(request.files)
+        app.logger.debug(request.form)
+        app.logger.debug(request.form.getlist('collaborators[]'))
+        print()
+        print()
+        for a, b in form.items():
+            if b == '':
+                flash('You fill not all fields')
+                return redirect("/projects/new", code=302)
+        for i in request.form.getlist('collaborators[]'):
+            if not db.check_user_is_exist(i):
+                flash(f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration")
         if 'cover' not in request.files:
             flash('No file part')
-            return redirect(f"/myprojects/new")
+            return redirect(f"/projects/new")
         file = request.files['cover']
         if file.filename == '':
             flash('No selected file')
-            return redirect(f"/myprojects/new")
+            return redirect(f"/projects/new")
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            file_id_name = filename.rsplit('.', 1)
             try:
-                if not db.create_project(form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links']) == False:
+            #if 1 == 1:
+                if db.create_project(form['name'], form['description'], form['teamlead'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
                     flash('This project already exists')
-                    return redirect("/myprojects/new", code=302)
+                    return redirect("/projects/new", code=302)
             except:
                 flash('You fill not all fields')
-                return redirect("/myprojects/new", code=302)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return redirect("/projects/new", code=302)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()+1) + '.' + file_id_name[1]))
             flash('Project created')
             return redirect("/myprojects", code=302)
 
 @app.route('/projects', methods=['GET'])
 def get_projects():
-    if (db.create_project("Silaeder Projectssssssssssssssss", "ilyastarcek", "ICT", ['ilyastarcek', 'NICITATURBOBOY'], "site_for_Silaeder_projects", "https://silaeder.com", "github", 'icon.jpg', '') != True):
-        print("aguzog")
     ans = db.get_all_projects()
     return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
 
@@ -221,10 +239,30 @@ def get_project(id):
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
     if (request.method == 'GET'):
+        token = confirm_token(request.cookies.get("jwt"))
+        if not token:
+            flash("You are not logged in")
+            return redirect('/login') 
         ans = db.get_project_by_id(id)
-        return render_template("edit_project.html", ans = ans)
+        return render_template("edit_project.html", ans = ans, user = token)
     else:
+        token = confirm_token(request.cookies.get("jwt"))
+        if not token:
+            flash("You are not logged in")
+            return redirect('/login') 
         form = request.form
+        print()
+        print()
+        app.logger.debug(request.files)
+        app.logger.debug(request.form)
+        app.logger.debug(request.form.getlist('collaborators[]'))
+        print()
+        print()
+        for a, b in form.items():
+            if b == '':
+                flash('You fill not all fields')
+                return redirect(f"/projects/{id}/edit", code=302)
+
         if 'cover' not in request.files:
             flash('No file part')
             return redirect(f"/projects/{id}/edit")
@@ -234,8 +272,9 @@ def edit_project(id):
             return redirect(f"/projects/{id}/edit")
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            db.update_project(id, form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"], filename, form['links'])
+            file_id_name = filename.rsplit('.', 1)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()+1) + '.' + file_id_name[1]))
+            db.update_project(id, form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['links'], form['link-pdf'])
 
 @app.route('/myprojects', methods=['GET'])
 def get_my_projects():
@@ -244,6 +283,7 @@ def get_my_projects():
         flash("You are not logged in")
         return redirect('/login') 
     ans = db.get_projects_by_username(token)
+    print(ans)
     return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
 
 app.run("0.0.0.0", port=18001, debug=True)
