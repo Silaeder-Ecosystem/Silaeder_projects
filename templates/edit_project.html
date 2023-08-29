@@ -3,43 +3,53 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel= "stylesheet" type= "text/css" href= "editprojects.css">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='styles/edit_project.css')}}">
         <link href="https://fonts.cdnfonts.com/css/spoof-trial" rel="stylesheet">
         <title>Silaeder Projects | Витрина проектов Силаэдра</title>
     </head>
     <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <header class="site-header">
             <nav class="site-navigation">
-                <img src="photo_2023-07-31_17-49-55.jpg" class="logo">
-                <span class="name"><a href="#">Silaeder Projects</a></span>
+                <img src="{{ url_for('static', filename='icon.jpg')}}" class="logo">
+                <span class="name"><a href="/">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
                 <div class="dropdown">
-                    <span>Н</span>                  
+                    <span>👤</span>                  
                     <div class="dropdown-content">
-                        <a href="#">Create project</a>
-                        <a href="#">My projects</a>
-                        <a href="#" style="color: red;">Log Out</a>
+                        <a href="/myprojects/new">Create project</a>
+                        <a href="/myprojects">My projects</a>
+                        <a href="/logout" style="color: red;">Log Out</a>
                     </div>
                 </div>
             </div>
             </nav>
         </header>
         <div class="form">
-            <form>
+            <form action="/projects/{{ans[0]}}/edit" method="post" enctype="multipart/form-data">
                 <span class="titles">Название проекта: </span>
-                <input type="text" name="name" id="name" class="input-text" placeholder="Title" value=""> 
+                <input type="text" name="name" id="name" class="input-text" placeholder="Title" value="{{ans[2]}}"></input> 
                 <br>    
                 <span class="titles">Научный руководитель | тимлид: </span>
-                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name" value=""> 
+                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name"> {{ans[-4]}}</input>
                 <br>  
+                <span class="titles">Тема проекта: </span>
+                <input type="text" name="topic" id="topic" class="input-text" placeholder="Name">{{ans[-5]}}</input>
+                <br>
                 <span class="titles">Участники: </span>
                 <ul id="collaborators">
-                    <li>Никита Мартьянов</li>
+                    <li><input class="hid_inp" name="collaborators[]" value='{{user}}'>{{user}}</input></li>
                     <li id="addNewContext" class="menu-item-divided">+</li>
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>
-                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something" value=""></textarea>
+                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something" value="{{ans[3]}}"></textarea>
                 <br> 
                 <span class="titles">Обложка проекта: </span>            
                 <br>
@@ -50,20 +60,20 @@
                 </div>
                 <br>
                 <span class="titles">Ссылка на картинки: </span>
-                <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link" value="">
+                <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link">{{ans[4]}}</input>
                 <br> 
                 <span class="titles">Ссылка на PGF презентацию: </span>
-                <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link" value="">
+                <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link">{{ans[-1]}}</input>
                 <br>
                 <span class="titles">Ссылка на видео: </span>
-                <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link" value="">
+                <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link">{{ans[5]}}</input>
                 <br>
                 <span class="titles">Полезные ссылки: </span>
-                <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ..." value="">
+                <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ...">{{ans[-2]}}</input>
                 <br>
                 <input type="submit" name="submit" id="submit" value="Submit">
-                <a href="main.html" class="cancel">Cancel</a>
-                <a href="main.html" class="cancel">Delete</a>
+                <a href="/myprojects" class="cancel">Cancel</a>
+                <a href="/projects/{{id}}/delete" class="cancel">Delete</a>
             </form>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -79,7 +89,7 @@
             if (e.keyCode == 13) {
                 var val = $(this).text();
                 $(this)
-                    .before('<li onclick="remove(this)">' + val + '</li>')
+                    .before('<li onclick="remove(this)"><input class="hid_inp" name="collaborators[]" value="'+ val + '" readonly>' + val + '</input></li>')
 
                     .html("+")
 
