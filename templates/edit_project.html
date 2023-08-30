@@ -34,10 +34,10 @@
         <div class="form">
             <form action="/projects/{{ans[0]}}/edit" method="post" enctype="multipart/form-data">
                 <span class="titles">Название проекта: </span>
-                <input type="text" name="name" id="name" class="input-text" placeholder="Title" value="{{ans[2]}}">
+                <input type="text" name="name" id="name" class="input-text" placeholder="Title" value="{{ans[2]}}" required>
                 <br>    
                 <span class="titles">Научный руководитель(или слово 'нет', если нет): </span>
-                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name" value="{{ans[-4]}}">
+                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name" value="{{ans[-4]}}" required>
                 <br>  
                 <span class="titles">Тема проекта: </span>
                 <input type="text" name="topic" id="topic" class="input-text" placeholder="Name" value = '{{ans[-5]}}'>
@@ -51,7 +51,7 @@
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>
-                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something">{{ans[3]}}</textarea>
+                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something">{{ans[3]}} required</textarea>
                 <br> 
                 <span class="titles">Обложка проекта: </span>            
                 <br>
