@@ -57,20 +57,20 @@
                 <br>
                 <div class="cover">
                     <label for="cover" class="input-file-label">Choose file</label>
-                    <input type="file" name="cover" id="cover" class="input-file" value='{{url_for('static', filename='ans[-3]')}}'>    
+                    <input type="file" name="cover" id="cover" class="input-file" value="{{url_for('static', filename='ans[-3]')}}">    
                     <output id="list"></output>
                 </div>
                 <br>
-                <span class="titles">Ссылка на картинки: </span>
+                <span class="titles">Ссылка на картинки(или оставте пустым, если нет): </span>
                 <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link" value = '{{ans[4]}}'>
                 <br> 
-                <span class="titles">Ссылка на PGF презентацию: </span>
+                <span class="titles">Ссылка на PGF презентацию(или оставте пустым, если нет): </span>
                 <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link" value='{{ans[-1]}}'>
                 <br>
-                <span class="titles">Ссылка на видео: </span>
+                <span class="titles">Ссылка на видео(или оставте пустым, если нет): </span>
                 <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link" value = '{{ans[5]}}'>
                 <br>
-                <span class="titles">Полезные ссылки: </span>
+                <span class="titles">Полезные ссылки(или оставте пустым, если нет): </span>
                 <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ..." value = '{{ans[-2]}}'>
                 <br>
                 <input type="submit" name="submit" id="submit" value="Submit">

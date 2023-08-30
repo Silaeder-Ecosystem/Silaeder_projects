@@ -231,3 +231,28 @@ li:nth-child(3n + 4) {
     clear: left;
 }
 
+.link-edit {
+
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 2%;
+    text-align: right;
+
+}
+
+.edit-icon {
+
+    position:absolute;
+    width: 30px;
+    height: 30px;
+    left: 2370%;
+    top: 2%;
+
+}
+
+.edit-icon:hover {
+
+    filter: contrast(5%);
+
+}

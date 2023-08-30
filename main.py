@@ -12,11 +12,11 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-#db.delete_all()
+db.delete_all()
 
 db.create_all()
 
-#db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", '../icon.jpg', 'projects.sileder.ru', 'нет')
+db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'icon.jpg', 'projects.sileder.ru', 'нет')
 
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
@@ -24,7 +24,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'silaederprojects@gmail.com'  
 app.config['MAIL_DEFAULT_SENDER'] = 'silaederprojects@gmail.com'  
 app.config['MAIL_PASSWORD'] = 'waduszxztipcdeyd'  
-app.config['UPLOAD_FOLDER'] = './static/uploads'
+app.config['UPLOAD_FOLDER'] = './static/'
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -197,9 +197,9 @@ def new_projects():
         app.logger.debug(request.form.getlist('collaborators[]'))
         print()
         print()
-        for a, b in form.items():
-            if b == '':
-                flash('You fill not all fields')
+        for i in ['name', 'description', 'teacher', 'topic']:
+            if form[i] == '':
+                flash(f"You don't fill {i} field")
                 return redirect("/projects/new", code=302)
         for i in request.form.getlist('collaborators[]'):
             if not db.check_user_is_exist(i):
@@ -235,8 +235,10 @@ def get_projects():
 @app.route('/projects/<id>', methods=['GET'])
 def get_project(id):
     ans = db.get_project_by_id(id)
+    ans = list(ans[0])
     print(ans)
-    return render_template("project.html", ans = ans)
+    token = confirm_token(request.cookies.get("jwt"))
+    return render_template("viewproject.html", ans = ans, user = token)
 
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
@@ -262,10 +264,10 @@ def edit_project(id):
         app.logger.debug(request.form.getlist('collaborators[]'))
         print()
         print()
-        for a, b in form.items():
-            if b == '':
-                flash('You fill not all fields')
-                return redirect(f"/projects/{id}/edit", code=302)
+        for i in ['name', 'description', 'teacher', 'topic']:
+            if form[i] == '':
+                flash(f"You don't fill {i} field")
+                return redirect("/projects/new", code=302)
 
         if 'cover' not in request.files:
             flash('No file part')
@@ -278,7 +280,7 @@ def edit_project(id):
             filename = secure_filename(file.filename)
             file_id_name = filename.rsplit('.', 1)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.' + file_id_name[1]))
-            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf'])
+            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(id) + '.' + file_id_name[1], form['link-interes'], form['link-pdf'])
             flash("Project edited")
             return redirect('/myprojects', code=200)
 
@@ -296,7 +298,7 @@ def get_my_projects():
 def search(inp):
     ans = db.search_for_projects(inp)
     for i in range(len(ans)):
-        ans[i][-3] = """{{url_for('static', filename=uploads/""" + ans[i][4] + """)}}"""
+        ans[i][4] = """{{url_for('static', filename=uploads/""" + ans[i][4] + """)}}"""
     return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Sileder Projects")
 
 app.run("0.0.0.0", port=18001, debug=True)

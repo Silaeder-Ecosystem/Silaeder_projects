@@ -3,55 +3,86 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel= "stylesheet" type= "text/css" href= "viewproject.css">
+        <link rel= "stylesheet" type= "text/css" href= "{{url_for('static', filename='styles/viewproject.css')}}">
         <link href="https://fonts.cdnfonts.com/css/spoof-trial" rel="stylesheet">
         <title>Silaeder Projects | Витрина проектов Силаэдра</title>
     </head>
     <body>
         <header class="site-header">
             <nav class="site-navigation">
-                <img src="photo_2023-07-31_17-49-55.jpg" class="logo">
-                <span class="name"><a href="#">Silaeder Projects</a></span>
+                <img src="{{url_for('static', filename='icon.jpg')}}" class="logo">
+                <span class="name"><a href="/projects">Silaeder Projects</a></span>
                 <input name="search" type="text" class="search" placeholder="Search..."  id="search">
+                {% if user %}
                 <div class="dropdown">
-                    <span>Н</span>                  
+                    <span>👤</span>                  
                     <div class="dropdown-content">
-                        <a href="#">Create project</a>
-                        <a href="#">My projects</a>
-                        <a href="#" style="color: red;">Log Out</a>
+                        <a href="/projects/new">Create project</a>
+                        <a href="/myprojects">My projects</a>
+                        <a href="/logout" style="color: red;">Log Out</a>
                     </div>
                 </div>
+                {% else %}
+                <ul class="nav">
+                    <li><a href="/login" class="register"><span>Log In</span></a></li>
+                    <li><a href="/registration" class="register"><span>Sign Up</span></a></li>
+                </ul>
+                {% endif %}
             </div>
             </nav>
         </header>
         <div class="form">
             <form>
+                <img src="/static/{{ans[-3]}}" alt="обложка" style="border-radius: 7px; height: 32%; width: 30%;">
+                <div class="edit-div">
+                    <a href="editprojects.html" class="link-edit">    
+                        <img src="https://www.svgrepo.com/download/504730/pencil.svg" class="edit-icon">    
+                    </a>   
+                </div>
                 <span class="titles">Название проекта: </span>
-                <span class="description">Title</span> 
+                <span class="description">{{ans[2]}}</span> 
                 <br>    
-                <span class="titles">Научный руководитель | тимлид: </span>
-                <span class="description">Name</span> 
+                <span class="titles">Научный руководитель: </span>
+                <span class="description">{{ans[-4]}}</span> 
                 <br>  
                 <span class="titles">Участники: </span>
                 <ul id="collaborators">
-                    <li>name</li>
+                    {% for i in ans[1] %}
+                        <li>{{i}}</li>
+                    {% endfor %}
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>   
                 <br>
-                <span class="descriptionp">Description</span>
+                <span class="descriptionp">{{ans[3]}}</span>
                 <br>
-                <span class="titles">Ссылка на картинки: </span>    
-                <span class="description"><a href="#">Link</a></span>             
+                <span class="titles">Ссылка на картинки: </span>  
+                {% if ans[4] != '' %}  
+                <span class="description"><a href="{{ans[4]}}">{{ans[4]}}</a></span>  
+                {% else %}           
+                <span class="description">нет</span>
+                {% endif %}
                 <br> 
                 <span class="titles">Ссылка на PGF презентацию: </span>
-                <span class="description"><a href="#">Link</a></span> 
+                {% if ans[-1] != '' %}  
+                <span class="description"><a href="{{ans[-1]}}">{{ans[-1]}}</a></span>  
+                {% else %}           
+                <span class="description">нет</span>
+                {% endif %}
                 <br>
                 <span class="titles">Ссылка на видео: </span>
-                <span class="description"><a href="#">Link</a></span> 
+                {% if ans[5] != '' %}  
+                <span class="description"><a href="{{ans[5]}}">{{ans[5]}}</a></span>  
+                {% else %}           
+                <span class="description">нет</span>
+                {% endif %}
                 <br>
                 <span class="titles">Полезные ссылки: </span>
-                <span class="description"><a href="#">Links</a></span> 
+                {% if ans[-2] != '' %}  
+                <span class="description"><a href="{{ans[-2]}}">{{ans[-2]}}</a></span>  
+                {% else %}           
+                <span class="description">нет</span>
+                {% endif %}
                 <br>
             </form>
         </div>

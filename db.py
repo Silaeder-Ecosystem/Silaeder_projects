@@ -118,13 +118,11 @@ def get_project_by_id(id):
     return cursor.fetchall()
 
 def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link):
-    try:
-        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s, pdf-link=%s WHERE id =%s;"""
+    if 1==1:
+        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s, pdf_link=%s WHERE id =%s;"""
         cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, id, ))
         conn.commit()
         return True
-    except:
-        return False
     
 def get_all_usernames():
     sqlite3_select_query = """SELECT username FROM users;"""
