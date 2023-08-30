@@ -206,3 +206,22 @@ def count_of_projects():
     cursor.execute(query)
     conn.commit()
     return cursor.fetchall()[0][0]
+
+def search_for_projects(title):
+    query = """
+    SELECT *
+    FROM (
+        SELECT title, teamlead, topic, id, main_pic_path, similarity(LOWER(title), %s) AS s_title
+        FROM projects
+    ) AS subquery
+    WHERE LOWER(title) LIKE %s AND s_title > 0.3
+    ORDER BY s_title DESC;
+"""
+    cursor.execute(query, (title.lower(), '%' + title.lower() + '%'))
+
+    conn.commit()
+    ans = cursor.fetchall()
+    for i in range(len(ans)):
+        ans[i] = list(ans[i])
+        del ans[i][-1]
+    return ans

@@ -216,7 +216,7 @@ def new_projects():
             file_id_name = filename.rsplit('.', 1)
             try:
             #if 1 == 1:
-                if db.create_project(form['name'], form['description'], form['teamlead'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
+                if db.create_project(form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
                     flash('This project already exists')
                     return redirect("/projects/new", code=302)
             except:
@@ -229,11 +229,13 @@ def new_projects():
 @app.route('/projects', methods=['GET'])
 def get_projects():
     ans = db.get_all_projects()
+    print(ans)
     return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
 
 @app.route('/projects/<id>', methods=['GET'])
 def get_project(id):
     ans = db.get_project_by_id(id)
+    print(ans)
     return render_template("project.html", ans = ans)
 
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
@@ -244,6 +246,8 @@ def edit_project(id):
             flash("You are not logged in")
             return redirect('/login') 
         ans = db.get_project_by_id(id)
+        ans = list(ans[0])
+        print(ans)
         return render_template("edit_project.html", ans = ans, user = token)
     else:
         token = confirm_token(request.cookies.get("jwt"))
@@ -273,8 +277,10 @@ def edit_project(id):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_id_name = filename.rsplit('.', 1)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()+1) + '.' + file_id_name[1]))
-            db.update_project(id, form['title'], form['description'], form['teamlead'], form['team'], form['video_url'], form['images_link'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['links'], form['link-pdf'])
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.' + file_id_name[1]))
+            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf'])
+            flash("Project edited")
+            return redirect('/myprojects', code=200)
 
 @app.route('/myprojects', methods=['GET'])
 def get_my_projects():
@@ -285,5 +291,12 @@ def get_my_projects():
     ans = db.get_projects_by_username(token)
     print(ans)
     return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
+
+@app.route('/projects/search/<inp>', methods=['GET'])
+def search(inp):
+    ans = db.search_for_projects(inp)
+    for i in range(len(ans)):
+        ans[i][-3] = """{{url_for('static', filename=uploads/""" + ans[i][4] + """)}}"""
+    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Sileder Projects")
 
 app.run("0.0.0.0", port=18001, debug=True)
