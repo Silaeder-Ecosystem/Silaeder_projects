@@ -34,10 +34,10 @@
         <div class="form">
             <form action="/projects/new" method="post" enctype="multipart/form-data">
                 <span class="titles">Название проекта: </span>
-                <input type="text" name="name" id="name" class="input-text" placeholder="Title"> 
+                <input type="text" name="name" id="name" class="input-text" placeholder="Title" required> 
                 <br>    
                 <span class="titles">Научный руководитель | тимлид: </span>
-                <input type="text" name="teamlead" id="teamlead" class="input-text" placeholder="Name"> 
+                <input type="text" name="teamlead" id="teamlead" class="input-text" placeholder="Name" required> 
                 <br>  
                 <span class="titles">Тема проекта: </span>
                 <input type="text" name="topic" id="topic" class="input-text" placeholder="Name"> 
@@ -49,7 +49,7 @@
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>
-                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something"></textarea>
+                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something" required></textarea>
                 <br> 
                 <span class="titles">Обложка проекта: </span>            
                 <br>
