@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='styles/style.css')}}">
+        <link href="https://fonts.cdnfonts.com/css/spoof-trial" rel="stylesheet">
+        <title>Silaeder Projects | Витрина проектов Силаэдра</title>
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <header class="site-header">
+            <nav class="site-navigation">
+                <img src="{{url_for('static', filename='./icon.jpg')}}" class="logo">
+                <span class="name"><a href="#">{{title}}</a></span>
+                <input name="search" type="text" class="search" placeholder="Search..."  id="search">
+                {% if user %}
+                <div class="dropdown">
+                    <span>👤</span>                  
+                    <div class="dropdown-content">
+                        <a href="/projects/new">Create project</a>
+                        <a href="/myprojects">My projects</a>
+                        <a href="/logout" style="color: red;">Log Out</a>
+                    </div>
+                </div>
+                {% else %}
+                <ul class="nav">
+                    <li><a href="/login" class="register"><span>Log In</span></a></li>
+                    <li><a href="/registration" class="register"><span>Sign Up</span></a></li>
+                </ul>
+                {% endif %}
+            </div>
+            </nav>
+        </header> 
+        <section>
+        {% if ans|length == 0 %}
+            <!--very need styled text "You don't have any projects yet. Create it!"-->
+        {% else %}
+            {% for i in ans %}
+                <a href="/projects/{{i[3]}}">
+                    <div class="card">
+                        <div class="content">
+                            <img class="image" src="/static/{{i[4]}}">
+                            <div>
+                                <span class="topic">{{i[2]}}</span>
+                                <div class="marquee"><span>{{i[0]}}</span></div>
+                                <span>By {{i[1]}}`s team</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        {% endif %}
+        </section>
+    </body>
+</html>

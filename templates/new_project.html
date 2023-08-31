@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='styles/new_project.css')}}">
+        <link href="https://fonts.cdnfonts.com/css/spoof-trial" rel="stylesheet">
+        <title>Silaeder Projects | Витрина проектов Силаэдра</title>
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <script>alert("{{message}}");</script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <header class="site-header">
+            <nav class="site-navigation">
+                <img src="{{ url_for('static', filename='icon.jpg')}}" class="logo">
+                <span class="name"><a href="#">Silaeder Projects</a></span>
+                <input name="search" type="text" class="search" placeholder="Search..."  id="search">
+                <div class="dropdown">
+                    <span>👤</span>                  
+                    <div class="dropdown-content">
+                        <a href="/myprojects/new">Create project</a>
+                        <a href="/myprojects">My projects</a>
+                        <a href="/logout" style="color: red;">Log Out</a>
+                    </div>
+                </div>
+            </div>
+            </nav>
+        </header>
+        <div class="form">
+            <form action="/projects/new" method="post" enctype="multipart/form-data">
+                <span class="titles">Название проекта: </span>
+                <input type="text" name="name" id="name" class="input-text" placeholder="Title"> 
+                <br>    
+                <span class="titles">Научный руководитель(или слово 'нет', если нет): </span>
+                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name"> 
+                <br>  
+                <span class="titles">Тема проекта: </span>
+                <input type="text" name="topic" id="topic" class="input-text" placeholder="Name"> 
+                <br> 
+                <span class="titles">Участники: </span>
+                <ul>
+                    <li><input class="hid_inp" name="collaborators[]" value='{{user}}'>{{user}}</input></li>
+                    <li id="addNewContext" class="menu-item-divided">+</li>
+                </ul> 
+                <br>  
+                <span class="titles">Описание проекта: </span>
+                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something"></textarea>
+                <br> 
+                <span class="titles">Обложка проекта: </span>            
+                <br>
+                <div class="cover">
+                    <label for="cover" class="input-file-label">Choose file</label>
+                    <input type="file" name="cover" id="cover" class="input-file">    
+                    <output id="list"></output>
+                </div>
+                <br>
+                <span class="titles">Ссылка на картинки(или оставте пустым, если нет): </span>
+                <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link">
+                <br> 
+                <span class="titles">Ссылка на PGF презентацию(или оставте пустым, если нет): </span>
+                <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link">
+                <br>
+                <span class="titles">Ссылка на видео(или оставте пустым, если нет): </span>
+                <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link">
+                <br>
+                <span class="titles">Полезные ссылки(или оставте пустым, если нет): </span>
+                <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ...">
+                <br>
+                <input type="submit" name="submit" id="submit" value="Submit">
+                <a href="/projects" class="cancel">Cancel</a>
+            </form>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
+        <script>
+
+            $('#addNewContext')
+
+            .click(function() {
+                $(this).html("").attr('contenteditable', 'true');
+            })
+
+            .keyup(function(e) {
+            if (e.keyCode == 13) {
+                var val = $(this).text();
+                $(this)
+                    .before('<li onclick="remove(this)"><input class="hid_inp" name="collaborators[]" value="'+ val + '" readonly>' + val + '</input></li>')
+
+                    .html("+")
+
+                    .attr('contenteditable', 'false');
+                e.preventDefault();
+            }
+            });
+
+            function remove(el) {
+                var element = el;
+                element.remove();
+            }
+
+            function handleFileSelect (evt) {
+                for (const file of evt.target.files) {
+                
+                    const span = document.createElement('span')
+                    const src = URL.createObjectURL(file)
+                    span.innerHTML = 
+                    `<img style="height: 75px; border: 1.5px solid #edd200; border-radius: 7px; margin: 5px"` + 
+                    `src="${src}" title="${escape(file.name)}">`
+
+                    document.getElementById('list').insertBefore(span, null)
+                }
+            }
+
+            document.getElementById('cover').addEventListener('change', handleFileSelect, false);
+
+        </script>
+    </body>
+</html>
