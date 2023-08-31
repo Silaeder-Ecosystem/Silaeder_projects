@@ -212,7 +212,7 @@ def search_for_projects(title):
         SELECT title, teamlead, topic, id, main_pic_path, similarity(LOWER(title), %s) AS s_title
         FROM projects
     ) AS subquery
-    WHERE LOWER(title) LIKE %s AND s_title > 0.3
+    WHERE LOWER(title) LIKE %s AND s_title > 0.1
     ORDER BY s_title DESC;
 """
     cursor.execute(query, (title.lower(), '%' + title.lower() + '%'))
