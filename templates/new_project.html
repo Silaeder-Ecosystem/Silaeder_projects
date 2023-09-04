@@ -32,16 +32,19 @@
             </nav>
         </header>
         <div class="form">
-            <form action="/projects/new" method="post" enctype="multipart/form-data">
+            <form>
                 <span class="titles">Название проекта: </span>
-                <input type="text" name="name" id="name" class="input-text" placeholder="Title"> 
+                <br>
+                <input type="text" name="name" id="name" class="input-text" placeholder="Title" required> 
                 <br>    
-                <span class="titles">Научный руководитель(или слово 'нет', если нет): </span>
-                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name"> 
+                <span class="titles">Научный руководитель | тимлид(или слово 'нет', если нет): </span>
+                <br>
+                <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name" required> 
                 <br>  
                 <span class="titles">Тема проекта: </span>
-                <input type="text" name="topic" id="topic" class="input-text" placeholder="Name"> 
-                <br> 
+                <br>
+                <input type="text" name="topic" id="topic" class="input-text" placeholder="Theme" required> 
+                <br/>
                 <span class="titles">Участники: </span>
                 <ul>
                     <li><input class="hid_inp" name="collaborators[]" value='{{user}}'>{{user}}</input></li>
@@ -49,7 +52,8 @@
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>
-                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something"></textarea>
+                <br>
+                <textarea type="text" name="description" id="description" class="input-text" placeholder="Something" required></textarea>
                 <br> 
                 <span class="titles">Обложка проекта: </span>            
                 <br>
@@ -60,15 +64,19 @@
                 </div>
                 <br>
                 <span class="titles">Ссылка на картинки(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link">
                 <br> 
                 <span class="titles">Ссылка на PGF презентацию(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link">
                 <br>
                 <span class="titles">Ссылка на видео(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link">
                 <br>
                 <span class="titles">Полезные ссылки(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ...">
                 <br>
                 <input type="submit" name="submit" id="submit" value="Submit">

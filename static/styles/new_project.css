@@ -47,7 +47,7 @@ body {
     max-width: 100%;
     height: 100%;
     display: flex;
-    margin: 0 auto;
+    margin: 0;
     align-items: center;
 }
 
@@ -264,6 +264,7 @@ section {
 
 .form {
     position: absolute;
+    width: 98%;
     top: 22%;
     left: 2%;
     display: inline-block;
@@ -273,15 +274,15 @@ section {
     font-family: 'Comfortaa', cursive;
     font-size: 3vh;
     display: inline-block;
-    margin-bottom: 1.5%;
+    margin-bottom: 1%;
 }
 
 .input-text {
-    width: 80%;
+    width: 20%;
     border: 1.5px solid rgb(220, 219, 235);
     border-radius: 7px;
     font-size: 13px;
-    padding: 3.5%;
+    padding: 1%;
     color: #000;
     display: inline-block;
     margin-bottom: 3%;
@@ -317,10 +318,12 @@ li:focus {
 
 ul {
     position: relative;
-    width: 220%;
-    padding-inline-start: 0;
-    margin-block-start: 0;
-    margin-block-end: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    max-width: 100%; 
+    text-align: justify; 
     list-style-type: none;
     overflow: hidden;
 }
@@ -408,7 +411,7 @@ li input::placeholder {
 }
 
 input[type="submit"] {
-    width: 37%;
+    width: 20%;
     border: none;
     font-family: 'Comfortaa', cursive;
     font-family: 'Dosis', sans-serif;
@@ -422,7 +425,7 @@ input[type="submit"] {
     content: "Submit";
     margin-bottom: 3%;
 }
-
+a
 input[type="submit"]:hover {
     background-color: #baa400;
 }
@@ -448,8 +451,4 @@ input[type="submit"]:hover {
 
     background-color: #ba0000;
 
-}
-
-.hid_inp {
-    display: none;
 }
