@@ -34,12 +34,15 @@
         <div class="form">
             <form action="/projects/{{ans[0]}}/edit" method="post" enctype="multipart/form-data">
                 <span class="titles">Название проекта: </span>
+                <br>
                 <input type="text" name="name" id="name" class="input-text" placeholder="Title" value="{{ans[2]}}">
                 <br>    
                 <span class="titles">Научный руководитель(или слово 'нет', если нет): </span>
+                <br>
                 <input type="text" name="teacher" id="teacher" class="input-text" placeholder="Name" value="{{ans[-4]}}">
                 <br>  
                 <span class="titles">Тема проекта: </span>
+                <br>
                 <input type="text" name="topic" id="topic" class="input-text" placeholder="Name" value = '{{ans[-5]}}'>
                 <br>
                 <span class="titles">Участники: </span>
@@ -51,6 +54,7 @@
                 </ul> 
                 <br>  
                 <span class="titles">Описание проекта: </span>
+                <br>
                 <textarea type="text" name="description" id="description" class="input-text" placeholder="Something">{{ans[3]}}</textarea>
                 <br> 
                 <span class="titles">Обложка проекта: </span>            
@@ -62,15 +66,19 @@
                 </div>
                 <br>
                 <span class="titles">Ссылка на картинки(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-image" id="link-image" class="input-text" placeholder="Link" value = '{{ans[4]}}'>
                 <br> 
                 <span class="titles">Ссылка на PGF презентацию(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-pdf" id="link-pdf" class="input-text" placeholder="Link" value='{{ans[-1]}}'>
                 <br>
                 <span class="titles">Ссылка на видео(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-video" id="link-video" class="input-text" placeholder="Link" value = '{{ans[5]}}'>
                 <br>
                 <span class="titles">Полезные ссылки(или оставте пустым, если нет): </span>
+                <br>
                 <input type="text" name="link-interes" id="link-interes" class="input-text" placeholder="Link, link, ..." value = '{{ans[-2]}}'>
                 <br>
                 <input type="submit" name="submit" id="submit" value="Submit">
