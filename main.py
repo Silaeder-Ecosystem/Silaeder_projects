@@ -82,11 +82,11 @@ def login():
         return render_template("login.html")
     
     else:
-        login = request.form["login"]
+        login = request.form["email"]
         password = request.form["password"]
 
         if db.get_is_user_logged_in(login, password):
-            token = jwt.encode(payload={"name": login}, key=parse_data("secret_key"))
+            token = jwt.encode(payload={"email": login}, key=parse_data("secret_key"))
             resp = make_response(redirect("/"))
             resp.set_cookie("jwt", token)
             return resp
@@ -95,7 +95,7 @@ def login():
             return redirect("/login", code=302)
 
 
-@app.route('/registration', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if (request.method == "GET"):
         return render_template("reg.html")
@@ -116,25 +116,25 @@ def register():
             else:
                 hasSpecialCharecters = True 
 
-        if ( hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters and form["password"] == form["password2"]):
+        if ( hasDigits and hasLowerCase and hasSpases and hasUpperCase and hasSpecialCharecters):
             if not re.match(r"[^@]+@[^@]+\.[^@]+", form["email"]):
                 flash('You write incorrect email')
-                return redirect("/registration", code=302)
+                return redirect("/register", code=302)
             app.logger.debug(parse.parse_csv())
             try:
                 if parse.parse_csv().index(form["email"]) == -1:
                     flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
-                    return redirect("/registration", code=302)
+                    return redirect("/register", code=302)
             except:
                 flash('This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)')
-                return redirect("/registration", code=302)
+                return redirect("/register", code=302)
             try:
                 if db.create_user(form['username'], form["email"], form['password'], form['name'], form['surname']) == False:
                     flash('This username or email already exists')
-                    return redirect("/registration", code=302)
+                    return redirect("/register", code=302)
             except:
                 flash('This username or email already exists')
-                return redirect("/registration", code=302)
+                return redirect("/register", code=302)
             
             flash('A confirmation email has been sent via email')
             resp = make_response(redirect("/", code=302))
@@ -150,7 +150,7 @@ def register():
         
         else:
             flash('You write incorrect password')
-            return redirect("/registration", code=302)
+            return redirect("/register", code=302)
 
 @app.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
