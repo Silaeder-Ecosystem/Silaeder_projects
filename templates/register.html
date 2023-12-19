@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sign Up | Silaeder Projects</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification({{ message.type }}, {{ message.text }});</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form class="form__input" method="POST" action="/register">
+      <h1 class="form__title">Sign Up</h1>
+      <input name="name" id="name" type="text" placeholder="Name" autocomplete="off" required/>
+      <input name="surname" id="surname" type="text" placeholder="Surname" autocomplete="off" required/>
+      <input name="email" id="email" type="email" placeholder="Email" autocomplete="off" required/>
+      <input name="password" id="password" type="password" placeholder="Password" autocomplete="off" requred/>
+      <input name="submit" type="submit" value="Sign Up" id="submit-btn"/>
+      <div class="link">
+        <a href="/login">If you authenticated</a>
+      </div>
+    </form>
+    <div class="notification__box"></div>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+  </body>
+</html>
