@@ -351,7 +351,6 @@ def user(username):
     return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=11701, debug=True)
     db.delete_all()
     db.create_all()
     db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
@@ -361,3 +360,5 @@ if __name__ == "__main__":
     db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
     db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
     db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    app.run("0.0.0.0", port=11701, debug=True)
+    print('create all')
