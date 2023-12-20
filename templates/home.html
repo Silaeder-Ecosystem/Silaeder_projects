@@ -46,30 +46,30 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification(`${{{ message[0] }}}`, `${{{ message[1] }}}`);</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
-    <form class="search__form">
-      <input type="text" name="search"placeholder="Search.." onkeydown="pressed(event)" autocomplete="off"/>
+    <form action="/search" method="POST" class="search__form">
+      <input type="text" name="search" placeholder="Search.." onkeydown="pressed(event)" autocomplete="off" value="{{inp}}"/>
     </form>
     {% if projects|length == 0 %}
       <div class="sad">
-        <span>We don't have projects 😥</span>
+        <span>Nothing here</span>
       </div>
     {% else %}
       <div class="cards__list">
         {% for i in projects %}
-        <a href="/projects/{{i[3]}}">
-          <div class="card">
-            <div class="card__image"> 
-              <img src="/static/{{i[4]}}"/> 
+          <a href="/projects/{{i[-2]}}">
+            <div class="card">
+              <div class="card__image"> 
+                <img src="/static/{{i[-1]}}"/> 
+              </div>
+              <div class="card__title title__black">
+                <p>{{i[0]}}</p>
+              </div>
             </div>
-            <div class="card__title title__black">
-              <p>{{i[0]}}</p>
-            </div>
-          </div>
-        </a>
+          </a>
         {% endfor %}
       </div>
     {% endif %}

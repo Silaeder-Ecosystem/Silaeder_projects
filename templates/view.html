@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
-    <title>View ans | Silaeder anss</title>
+    <title>View project | Silaeder Projects</title>
   </head>
   <body>
     <nav class="navbar" style="z-index: 1;">
@@ -20,7 +20,7 @@
           <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/anss" class="navbar__link" state="static"><i data-feather="folder"></i><span>anss</span></a>        
+          <a href="/projects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
         </li>
         <li class="navbar__item">
           <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
@@ -42,7 +42,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
@@ -62,7 +62,7 @@
             <span style="color: #3d3c3c;">Team:</span>
             <ul class="team">
               {% for i in ans[1] %}
-                <li>i</li>
+                <li>{{i}}</li>
               {% endfor %}
             </ul> 
           </li>
@@ -83,7 +83,7 @@
             <li><span style="color: #333;">Video:</span>&nbsp;{{ans[5]}}</li>
           {% endif %}
           {% if ans[-2] != '' %}
-          <li><span style="color: #333;">Useful links:</span>&nbsp;{{ans[-2]}}</li>
+          <li><span style="color: #333;">Useful Links:</span>&nbsp;{{ans[-2]}}</li>
           {% endif %}
         </ul>
       </div>
