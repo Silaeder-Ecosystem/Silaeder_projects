@@ -81,7 +81,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+          <script>sendNotification(`${{{ message[0] }}}`, `${{{ message[1] }}}`);</script>
         {% endfor %}
       {% endif %}
     {% endwith %}

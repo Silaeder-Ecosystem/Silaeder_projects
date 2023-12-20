@@ -338,7 +338,7 @@ def get_my_projects():
 
 @app.route('/search/', methods=['GET'])
 def search_main():
-    return render_template('search.html')
+    return render_template('index.html')
 
 @app.route('/search/<inp>', methods=['GET'])
 def search(inp):
