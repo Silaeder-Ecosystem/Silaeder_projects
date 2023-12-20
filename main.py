@@ -12,24 +12,6 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-db.delete_all()
-
-db.create_all()
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
-db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-
 def parse_data(field):
     file = open("config.json")
     data = json.load(file)[field]
@@ -110,7 +92,7 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if (request.method == "GET"):
-        return render_template("reg.html")
+        return render_template("register.html")
     else:
         form = request.form.to_dict()
         form['email'] = form['email'].lower()
@@ -209,7 +191,7 @@ def logout():
 def new_projects():
     if (request.method == "GET"):
         if (confirm_token(request.cookies.get("jwt")) != False):
-            return render_template("new_project.html", user = confirm_token(request.cookies.get("jwt")))
+            return render_template("create.html", user = confirm_token(request.cookies.get("jwt")))
         else:
             flash(['error', "You are not logged in"])
             return redirect('/login') 
@@ -261,7 +243,7 @@ def new_projects():
 def get_projects():
     ans = db.get_all_projects()
     print(ans)
-    return render_template("index.html", projects = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
+    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
 
 @app.route('/projects/<id>', methods=['GET'])
 def get_project(id):
@@ -285,7 +267,7 @@ def edit_project(id):
         ans = db.get_project_by_id(id)
         ans = list(ans[0])
         print(ans)
-        return render_template("edit_project.html", ans = ans, user = token, id = id)
+        return render_template("edit.html", ans = ans, user = token, id = id)
     else:
         token = confirm_token(request.cookies.get("jwt"))
         if not token:
@@ -334,18 +316,20 @@ def get_my_projects():
         return redirect('/login') 
     ans = db.get_projects_by_username(token)
     print(ans)
-    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
+    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
 
-@app.route('/search/', methods=['GET'])
+@app.route('/search/', methods=['GET', 'POST'])
 def search_main():
-    return render_template('index.html')
+    if request.method == 'GET':
+        return render_template('home.html')
+    else:
+        form = request.form
+        return redirect(f'/search/{form["search"]}/')
 
-@app.route('/search/<inp>', methods=['GET'])
+@app.route('/search/<inp>/', methods=['GET'])
 def search(inp):
     ans = db.search_for_projects(inp)
-    for i in range(len(ans)):
-        ans[i][4] = """{{url_for('static', filename=uploads/""" + ans[i][4] + """)}}"""
-    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"))
+    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), inp = inp)
 
 @app.route('/projects/<id>/delete')
 def delete_project(id):
@@ -364,6 +348,16 @@ def user(username):
     ans = db.get_projects_by_username(username)
     ans2 = db.get_user_by_username(username)
     print(ans)
-    return render_template("index.html", ans = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
+    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
 
-app.run("0.0.0.0", port=11701, debug=True)
+if __name__ == "__main__":
+    app.run("0.0.0.0", port=11701, debug=True)
+    db.delete_all()
+    db.create_all()
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
