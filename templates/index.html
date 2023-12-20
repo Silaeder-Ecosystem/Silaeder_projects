@@ -2,13 +2,17 @@
 <html lang="en ru">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}">
+    <title>Home | Silaeder Projects</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
-    <title>View ans | Silaeder anss</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sadText.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
   </head>
   <body>
     <nav class="navbar" style="z-index: 1;">
@@ -20,7 +24,7 @@
           <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/anss" class="navbar__link" state="static"><i data-feather="folder"></i><span>anss</span></a>        
+          <a href="/projects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
         </li>
         <li class="navbar__item">
           <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
@@ -46,49 +50,31 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
-    <div class="view__container">
-      <span class="title">
-        <a href="/" class="back">
-          <i data-feather="arrow-left-circle" height="30" width="30"></i>
+    <form class="search__form">
+      <input type="text" name="search"placeholder="Search.." onkeydown="pressed(event)" autocomplete="off"/>
+    </form>
+    {% if projects|length == 0 %}
+      <div class="sad">
+        <span>We don't have projects 😥</span>
+      </div>
+    {% else %}
+      <div class="cards__list">
+        {% for i in projects %}
+        <a href="/projects/{{i[3]}}">
+          <div class="card">
+            <div class="card__image"> 
+              <img src="/static/{{i[4]}}"/> 
+            </div>
+            <div class="card__title title__black">
+              <p>{{i[0]}}</p>
+            </div>
+          </div>
         </a>
-        <p style="font-size: 19px;">&nbsp;{{ans[2]}}</p>
-      </span>
-      <div class="saver">
-        <img class="cover" src="/static/{{ans[-3]}}" alt="cover">
-        <ul class="ttl">
-          <li><span>Topic:</span><span>&nbsp;{{ans[6]}}</span></li>
-          <li><span>Leader:</span><span>&nbsp;{{ans[7]}}</span></li>
-          <li>
-            <span style="color: #3d3c3c;">Team:</span>
-            <ul class="team">
-              {% for i in ans[1] %}
-                <li>i</li>
-              {% endfor %}
-            </ul> 
-          </li>
-        </ul>
+        {% endfor %}
       </div>
-      <div class="dtl">
-        <span class="description">
-          {{ans[3]}}
-        </span>
-        <ul style="margin-top: 2px;">
-          {% if ans[4] != '' %}
-            <li><span style="color: #333;">Images:</span>&nbsp;{{ans[4]}}</li>
-          {% endif %}
-          {% if ans[-1] != '' %}
-            <li><span style="color: #333;">Presentation:</span>&nbsp;{{ans[-1]}}</li>
-          {% endif %}
-          {% if ans[5] != '' %}
-            <li><span style="color: #333;">Video:</span>&nbsp;{{ans[5]}}</li>
-          {% endif %}
-          {% if ans[-2] != '' %}
-          <li><span style="color: #333;">Useful links:</span>&nbsp;{{ans[-2]}}</li>
-          {% endif %}
-        </ul>
-      </div>
-    </div>
-    <script src="https://unpkg.com/feather-icons"></script>
+    {% endif %}
+    <script src='https://unpkg.com/feather-icons'></script>
     <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
   </body>
 </html>

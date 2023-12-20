@@ -15,13 +15,6 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
 	</head>
 	<body>
-		{% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <script>sendNotification({{ message.type }}, {{ message.text }});</script>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
     <nav class="navbar" style="z-index: 1;">
       <ul class="navbar__menu"> 
         <li class="navbar__item">
@@ -47,6 +40,16 @@
         {% endif %}
       </ul>
     </nav>
+		<div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification(`${{{ message[0] }}}`, `${{{ message[1] }}}`);</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 		{% if user %}
 			{% if projects|length == 0 %}
 				<div class="sad">
@@ -119,7 +122,6 @@
 						</table>
 					</div>
 				</div>
-				<div class="notification__box"></div>
 				<div class="column" style="display: none">
 					<div class="dropdown">
 						<div class="dropdown-slider">
@@ -164,10 +166,8 @@
 				<span>If you don't authenticated 😥</span>
 			</div>
 		{% endif %}
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://unpkg.com/feather-icons"></script>
-		<script src="{{ url_for('static', filename='js/alert.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/projectst.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/feather.js') }}"></script>
 	</body>
