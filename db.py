@@ -188,10 +188,9 @@ def is_user_teamlead(id, username):
         return False
 
 def create_all():
-    sqlite_select_query = ["""CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pdf_link TEXT);""", 
-"""CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);"""]
-    cursor.execute(sqlite_select_query[0])
-    cursor.execute(sqlite_select_query[1])
+    sqlite_select_query = """CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pdf_link TEXT); 
+CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);"""
+    cursor.execute(sqlite_select_query)
     conn.commit() 
     try:
         create_user("admin", "silaederprojects@gmail.com", parse_data("secret_key"), "Admin", "Adminovich")
@@ -223,3 +222,5 @@ def search_for_projects(title):
         ans[i] = list(ans[i])
         del ans[i][-1]
     return ans
+
+print(get_all_usernames())
