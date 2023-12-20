@@ -9,13 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <script>sendNotification({{ message.type }}, {{ message.text }});</script>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
     <form class="form__input" method="POST" action="/login">
       <h1 class="form__title">Sign In</h1>
       <input name="email" id="email" type="email" placeholder="Email" autocomplete="off" required/>
@@ -26,6 +19,14 @@
       </div>
     </form>
     <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
     <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}  
   </body>
 </html>

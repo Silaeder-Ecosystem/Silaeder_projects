@@ -11,13 +11,6 @@
     <title>View project | Silaeder Projects</title>
   </head>
   <body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <script>sendNotification({{ message.type }}, {{ message.text }});</script>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
     <nav class="navbar" style="z-index: 1;">
       <ul class="navbar__menu"> 
         <li class="navbar__item">
@@ -43,6 +36,16 @@
         {% endif %}
       </ul>
     </nav>
+    <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <div class="view__container">
       <span class="title">
         <a href="/" class="back">
@@ -91,10 +94,7 @@
         </ul>
       </div>
     </div>
-    <div class="notification__box"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
     <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
   </body>
 </html>

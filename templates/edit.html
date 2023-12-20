@@ -10,13 +10,6 @@
     <title>Edit project | Silaeder Projects</title>
   </head>
   <body>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <script>sendNotification({{ message.type }}, {{ message.text }});</script>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
     <form class="container" action="/projects/{{ans[0]}}/edit" method="POST" enctype="multipart/form-data">
       <h1 class="title">Edit Project</h1>
       <div class="form">
@@ -84,9 +77,16 @@
     </form>
     <div class="notification__box"></div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <script src='https://unpkg.com/feather-icons'></script>
     <script src="{{ url_for('static', filename='js/projectForm.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
     <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
     <script src="{{ url_for('static', filename='js/edit.js') }}"></script>
   </body>

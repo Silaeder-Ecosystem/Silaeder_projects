@@ -41,6 +41,15 @@
       </ul>
     </nav>
     <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification(`${{{ message.type }}}`, `${{{ message.text }}}`);</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
     <form class="search__form">
       <input type="text" name="search"placeholder="Search.." onkeydown="pressed(event)" autocomplete="off"/>
     </form>
@@ -64,9 +73,7 @@
       {% endfor %}
     </div>
     {% endif %}
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
     <script src='https://unpkg.com/feather-icons'></script>
-    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
     <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
   </body>
