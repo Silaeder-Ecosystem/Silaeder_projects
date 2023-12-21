@@ -11,7 +11,7 @@
   <body>
     <form class="form__input" method="POST" action="/register">
       <h1 class="form__title">Sign Up</h1>
-      <input name="username" id="username" type="text" placeholder="Username" autocomplete="off" required/>
+      <input name="username" id="username" type="text" placeholder="Userame" autocomplete="off" required/>
       <input name="name" id="name" type="text" placeholder="Name" autocomplete="off" required/>
       <input name="surname" id="surname" type="text" placeholder="Surname" autocomplete="off" required/>
       <input name="email" id="email" type="email" placeholder="Email" autocomplete="off" required/>
@@ -27,7 +27,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
+          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}

@@ -46,7 +46,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
+          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
@@ -163,7 +163,7 @@
 			{% endif %}
 		{% else %}
 			<div class="sad">
-				<span>If you don't authenticated</span>
+				<span>If you don't authenticated 😥</span>
 			</div>
 		{% endif %}
 		<script src="https://unpkg.com/feather-icons"></script>
