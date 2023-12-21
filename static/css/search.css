@@ -6,7 +6,7 @@
     margin-top: calc(4rem - 6.5vh);
   }
   .search__form input {
-    background: url("./search.svg") no-repeat 1.5vh center;
+    background: url("{{ url_for('static', filename='image/search.svg') }}") no-repeat 1.5vh center;
   }
 }
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
@@ -16,7 +16,7 @@
     margin-top: calc(4rem - 3vh);
   }
   .search__form input {
-    background: url("./search.svg") no-repeat 0.85vh center;
+    background: url("{{ url_for('static', filename='image/search.svg') }}") no-repeat 0.85vh center;
   }
 }
 @media only screen and (min-width: 1024px) {
