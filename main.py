@@ -316,7 +316,7 @@ def get_my_projects():
         return redirect('/login') 
     ans = db.get_projects_by_username(token)
     print(ans)
-    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
+    return render_template("projects.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
 
 @app.route('/search/', methods=['GET', 'POST'])
 def search_main():

@@ -137,7 +137,7 @@ def get_user_id_by_username(username):
     return cursor.fetchall()
 
 def get_projects_by_username(username):
-    query= 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE %s = ANY(autor_usernames);'
+    query= 'SELECT title, teamlead, topic, id, main_pic_path, autor_usernames FROM projects WHERE %s = ANY(autor_usernames);'
     cursor.execute(query, (username, ))
     conn.commit()
     return cursor.fetchall()

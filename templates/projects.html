@@ -24,7 +24,7 @@
           <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/projects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
         </li>
         <li class="navbar__item">
           <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
@@ -53,7 +53,7 @@
 		{% if user %}
 			{% if projects|length == 0 %}
 				<div class="sad">
-					<span>You don't have projects 😥</span>
+					<span>Nothing here</span>
 				</div>
 			{% else %}
 				<div class="container projects">
@@ -73,45 +73,38 @@
 									<th class="th__name">Name</th>
 									<th class="th__leader">Leader</th>
 									<th class="th__team">Team</th>
-									<th class="th__teacher">Teacher</th>
 									<th class="th__actions">Actions</th>
 								</tr>
 							</thead> 
 							{% for i in projects %}
 								<tr>
 									<td class="td__name">
-										<p>{{i.title}}</p>
-										<p>{{i.topic}}</p>
+										<p>{{i[0]}}</p>
+										<p>{{i[2]}}</p>
 									</td>
 									<td class="td__leader">
-										<p>{{i.leader.name}}</p>
-										<p>{{i.leader.class}}</p>
+										<p>{{i[1]}}</p>
 									</td>
 									<td class="member td__team">
+										{% for j in i[-1] %}
 										<div class="member-info">
-											<p>{{i.team[0].name}}...</p>
-											<p>{{i.team[0].class}}</p>
+											<p>{{j}}...</p>
 										</div>
-									</td>
-									<td class="member td__teacher">
-										<div class="member-info">
-											<p>{{i.teacher}}</p>
-											<p>{{i.teacher.topic}}</p>
-										</div>
+										{% endfor %}
 									</td>
 									<td class="td__actions">
 										<ul class="actions">
-											<a href="{{i.link.view}}" class="table-link-view 1">
+											<a href="/projects/{{i[3]}}" class="table-link-view 1">
 												<li class="view">
 													<i data-feather="eye" height="22" width="22"></i>
 												</li>
 											</a>
-											<a href="{{i.link.edit}}" class="table-link-edit 1">
+											<a href="/projects/{{i[3]}}/edit" class="table-link-edit 1">
 												<li class="edit">
 													<i data-feather="edit-2" height="22" width="22"></i>
 												</li>
 											</a>
-											<li class="trash 1" link="{{i.link.delete}}">
+											<li class="trash 1" link="/projects/{{i[3]}}/delete">
 												<i data-feather="trash-2" height="22" width="22"></i>
 											</li>
 										</ul>
