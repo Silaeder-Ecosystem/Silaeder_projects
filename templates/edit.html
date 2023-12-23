@@ -15,53 +15,60 @@
       <div class="form">
         <label for="title" class="text__label">
           <p>Title:</p>
-          <input type="text" name="title" id="title" placeholder="Title" value="" autocomplete="off" required/>
+          <input type="text" name="title" id="title" placeholder="Title" value="{{ans[2]}}" autocomplete="off" required/>
         </label>
         <label for="leader" class="text__label">
           <p>Leader:</p>
-          <input type="text" name="leader" id="leader" placeholder="Name" value="" autocomplete="off" required/>
+          <input type="text" name="leader" id="leader" placeholder="Name" value="{{ans[7]}}" autocomplete="off" required/>
         </label>
         <label for="topic" class="text__label">
           <p>Topic:</p>
-          <input type="text" name="topic" id="topic" placeholder="Topic" value="" autocomplete="off" required/>
+          <input type="text" name="topic" id="topic" placeholder="Topic" value="{{ans[6]}}" autocomplete="off" required/>
+        </label>
+        <label for="teacher" class="text__label">
+          <p>Teacher:</p>
+          <input type="text" name="teacher" id="teacher" placeholder="Name" value="{{ans[12]}}" autocomplete="off" required/>
         </label>
         <label for="short-description" class="text__label">
           <p>Short description:</p>
-          <input type="text" name="short-description" id="short-description" placeholder="Short description" value="" autocomplete="off" required/>
+          <input type="text" name="short-description" id="short-description" placeholder="Short description" value="{{ans[11]}}" autocomplete="off" required/>
         </label>
         <div class="text__label cover__label">
           <p>Cover (.png, .jpg, .jpeg, .gif):</p>
           <ul>
             <label for="cover" class="file__label">Upload&nbsp;<i data-feather="upload" height="20" width="20"></i></label>
             <input type="file" name="cover" id="cover" class="cover" accept="image/gif, image/png, image/jpg, image/jpeg" autocomplete="off" required/>
-            <div class="file"><span></span>&nbsp;<i data-feather="x" height="20" width="20"></i></div>
+            <div class="file" style="display: none;"><span></span>&nbsp;<i data-feather="x" height="20" width="20"></i></div>
           </ul>
         </div>
         <label for="description" class="text__label">
           <p>Description:</p>
-          <textarea type="text" name="description" id="description" placeholder="Description" resize="vertical" value="" autocomplete="off" required></textarea>
+          <textarea type="text" name="description" id="description" placeholder="Description" resize="vertical" autocomplete="off" required>{{ans[3]}}</textarea>
         </label>
         <div class="text__label team">
           <p>Team:</p>
           <ul>
+            {% for i in ans[1] %}
+            <li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="{{i}}">{{i}}</li>
+            {% endfor %}
             <li id="addNewStudent" name="student" class="menu-item-divided"><img height="22" width="22" src="{{ url_for('static', filename='image/plus.svg') }}"></li>
           </ul> 
         </div>
         <label for="link-images" class="text__label">
           <p>Images:</p>
-          <input type="text" name="link-images" id="link-images" placeholder="Link" value="" autocomplete="off"/>
+          <input type="text" name="link-images" id="link-images" placeholder="Link" value="{{ans[4]}}" autocomplete="off"/>
         </label>
         <label for="link-pres" class="text__label">
           <p>Presentation:</p>
-          <input type="text" name="link-pres" id="link-pres" placeholder="Link" value="" autocomplete="off"/>
+          <input type="text" name="link-pres" id="link-pres" placeholder="Link" value="{{ans[-3]}}" autocomplete="off"/>
         </label>
         <label for="link-video" class="text__label">
           <p>Video:</p>
-          <input type="text" name="link-video" id="link-video" placeholder="Link" value="" autocomplete="off"/>
+          <input type="text" name="link-video" id="link-video" placeholder="Link" value="{{ans[5]}}" autocomplete="off"/>
         </label>
         <label for="link-interes" class="text__label">
           <p>Useful links:</p>
-          <input type="text" name="link-interes" id="link-interes" placeholder="Link, link..." value="" autocomplete="off"/>
+          <input type="text" name="link-interes" id="link-interes" placeholder="Link, link..." value="{{ans[-4]}}" autocomplete="off"/>
         </label>
         <div class="text__label submit">
           <ul>

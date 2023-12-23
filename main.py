@@ -144,7 +144,7 @@ def register():
             flash(['error', 'This username or email already exists'])
             return redirect("/register", code=302)
         
-        resp = make_response(redirect("/", code=302))
+        resp = make_response(redirect("/projects", code=302))
         flash(['success','A confirmation email has been sent via email'])
         
 
@@ -352,6 +352,64 @@ def user(username):
     ans2 = db.get_user_by_username(username)
     print(ans)
     return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    token = confirm_token(request.cookies.get("jwt"))
+    if not token:
+        flash(['error', "You are not logged in"])
+        return redirect('/login') 
+    if request.method == 'GET':
+        return render_template('settings.html')
+    else:
+        form = request.form
+        if form['name'] == '':
+            flash(['error', 'Nickname is not filled'])
+            return redirect('/settings')
+        if form['password'] == '':
+            flash(['error', 'Password is not filled'])
+            return redirect('/settings')
+        if form['password2'] == '':
+            flash(['error', 'Second password is not filled'])
+            return redirect('/settings')
+        hasDigits, hasUpperCase, hasLowerCase, hasSpecialCharecters, hasSpases = False, False, False, False, True
+
+        for i in form['password']:
+            if (i.isdigit()):
+                hasDigits = True
+            elif (i.isupper()):
+                hasUpperCase = True
+            elif (i.islower()):
+                hasLowerCase = True
+            elif (i == ' '):
+                flash(['error', 'Spaces are not allowed in'])
+            else:
+                hasSpecialCharecters = True 
+
+        if not hasDigits:
+            flash(['error', "Password must contain at least one digit"])
+            return redirect('/register')
+        
+        if not hasUpperCase:
+            flash(['error', "Password must contain at least one uppercase letter"])
+            return redirect('/register')
+        
+        if not hasLowerCase:
+            flash(['error', "Password must contain at least one lowercase letter"])
+            return redirect('/register')
+        
+        if not hasSpecialCharecters:
+            flash(['error', "Password must contain at least one special character"])
+            return redirect('/register') 
+
+        if form['password'] != form['password2']:
+            flash(['error', "Passwords must match"])
+            return redirect('/register') 
+        
+        if not db.update_user_data(token, form['name'], form['password']):
+            return 'ERROR: settings'
+        flash('User setting updated successfuly')
+        return redirect('/projects')
 
 if __name__ == "__main__":
     db.delete_all()

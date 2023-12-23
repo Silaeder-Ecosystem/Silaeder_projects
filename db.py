@@ -220,4 +220,13 @@ def search_for_projects(title):
     cursor.execute(query, ('%' + title.lower() + '%', title.lower(), ))
     return cursor.fetchall()
 
+def update_user_data(last_username, username, password):
+    try:
+        sqlite_select_query = """UPDATE users SET username=%s, password=%s WHERE username = %s;"""
+        cursor.execute(sqlite_select_query, (username, password, last_username))
+        conn.commit()
+        return True
+    except:
+        return False
+
 #print(get_all_usernames())

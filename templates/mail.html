@@ -1,27 +1,4 @@
-<!DOCTYPE html>
-<html lang="en ru">
-  <head>
-    <meta charset="UTF-8">
-    <title>Mail | Silaeder Projects</title>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  </head>
-  <body>
-    <div class="form__input">
-      <h1 class="form__title">{{title}}</h1>
-      <h2>{{text}}</h2> 
-    </div>
-    <div class="notification__box"></div>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
-    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}  
-  </body>
-</html>
+<p>Welcome! Thanks for signing up. Please follow this link to activate your account:</p>
+<p><a href="{{ confirm_url }}">{{ confirm_url }}</a></p>
+<br>
+<p>Thank You!</p>
