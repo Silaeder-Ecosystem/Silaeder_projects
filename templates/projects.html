@@ -67,6 +67,7 @@
 									<th class="th__name">Name</th>
 									<th class="th__leader">Leader</th>
 									<th class="th__team">Team</th>
+									<th class="th__team">Teacher</th>
 									<th class="th__actions">Actions</th>
 								</tr>
 							</thead> 
@@ -80,11 +81,14 @@
 										<p>{{i[1]}}</p>
 									</td>
 									<td class="member td__team">
-										{% for j in i[-1] %}
+										{% for j in i[-2] %}
 										<div class="member-info">
 											<p>{{j}}</p>
 										</div>
 										{% endfor %}
+									</td>
+									<td class="td__teacher">
+										<p>{{i[-1]}}</p>
 									</td>
 									<td class="td__actions">
 										<ul class="actions">

@@ -144,7 +144,7 @@ def register():
             flash(['error', 'This username or email already exists'])
             return redirect("/register", code=302)
         
-        resp = make_response(redirect("/", code=302))
+        resp = make_response(redirect("/projects", code=302))
         flash(['success','A confirmation email has been sent via email'])
         
 
