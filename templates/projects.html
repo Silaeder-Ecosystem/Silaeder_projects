@@ -46,22 +46,16 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
-		{% if user %}
-			{% if projects|length == 0 %}
-				<div class="sad">
-					<span>Nothing here</span>
-				</div>
-			{% else %}
 				<div class="container projects">
 					<div class="projects-inner">
 						<header class="projects-header">
 							<div class="title">Projects</div>
 							<div class="count">{{projects|length}} project</div>
-							<a href="/create">
+							<a href="/projects/new">
 								<span class="glyphicon">
 									<i data-feather="plus-circle"></i>
 								</span>
@@ -88,7 +82,7 @@
 									<td class="member td__team">
 										{% for j in i[-1] %}
 										<div class="member-info">
-											<p>{{j}}...</p>
+											<p>{{j}}</p>
 										</div>
 										{% endfor %}
 									</td>
@@ -153,12 +147,6 @@
 						</ul>
 					</div>
 				</div>
-			{% endif %}
-		{% else %}
-			<div class="sad">
-				<span>If you don't authenticated 😥</span>
-			</div>
-		{% endif %}
 		<script src="https://unpkg.com/feather-icons"></script>
 		<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
 		<script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>

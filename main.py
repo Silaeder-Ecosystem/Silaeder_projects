@@ -80,7 +80,7 @@ def login():
         password = request.form["password"]
 
         if db.get_is_user_logged_in(login, password):
-            token = jwt.encode(payload={"email": login}, key=parse_data("secret_key"))
+            token = jwt.encode(payload={"name": login}, key=parse_data("secret_key"))
             resp = make_response(redirect("/"))
             resp.set_cookie("jwt", token)
             return resp
@@ -144,8 +144,8 @@ def register():
             flash(['error', 'This username or email already exists'])
             return redirect("/register", code=302)
         
-        flash(['success','A confirmation email has been sent via email'])
         resp = make_response(redirect("/", code=302))
+        flash(['success','A confirmation email has been sent via email'])
         
 
         etoken = generate_confirmation_token(form["username"])
@@ -208,7 +208,7 @@ def new_projects():
         app.logger.debug(request.form.getlist('collaborators[]'))
         print()
         print()
-        for i in ['name', 'description', 'teacher', 'topic']:
+        for i in ['title', 'description', 'teacher', 'topic', 'short-description', 'leader']:
             if form[i] == '':
                 flash(['error', f"You don't fill {i} field"])
                 return redirect("/projects/new", code=302)
@@ -229,14 +229,17 @@ def new_projects():
             file_id_name = filename.rsplit('.', 1)
             try:
             #if 1 == 1:
-                if db.create_project(form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
+                if db.create_project(form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
                     flash(['error','This project already exists'])
                     return redirect("/projects/new", code=302)
             except:
-                flash('You fill not all fields')
+                flash(['error', 'You fill not all fields'])
                 return redirect("/projects/new", code=302)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()) + '.' + file_id_name[1]))
             flash(['success','Project created'])
+            return redirect("/myprojects", code=302)
+        else:
+            flash(['error','Uncorrect file or filename'])
             return redirect("/myprojects", code=302)
 
 @app.route('/projects', methods=['GET'])
@@ -251,7 +254,7 @@ def get_project(id):
     ans = list(ans[0])
     print(ans)
     token = confirm_token(request.cookies.get("jwt"))
-    return render_template("view.html", ans = ans, user = token, id = id)
+    return render_template("view.html", ans = ans, user = token, id = id, asset = token in ans[1])
 
 @app.route('/about', methods=['GET'])
 def about():
@@ -353,12 +356,6 @@ def user(username):
 if __name__ == "__main__":
     db.delete_all()
     db.create_all()
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'NICITATURBOBOY'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет')
+    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'Nikita Turbo'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет', 'site_for_Silaeder_projects', 'Olga Starunova')
     app.run("0.0.0.0", port=11701, debug=True)
     print('create all')

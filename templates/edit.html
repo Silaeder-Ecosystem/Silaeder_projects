@@ -17,10 +17,6 @@
           <p>Title:</p>
           <input type="text" name="title" id="title" placeholder="Title" value="" autocomplete="off" required/>
         </label>
-        <label for="teacher" class="text__label">
-          <p>Teacher:</p>
-          <input type="text" name="teacher" id="teacher" placeholder="Name" value="" autocomplete="off" required/>
-        </label>
         <label for="leader" class="text__label">
           <p>Leader:</p>
           <input type="text" name="leader" id="leader" placeholder="Name" value="" autocomplete="off" required/>
@@ -81,7 +77,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}

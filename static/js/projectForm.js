@@ -34,7 +34,7 @@ $('#addNewStudent')
     var val = $(this).text();
     $(this)
       .before(`<li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="${val}">${val}</li>`)
-      .html(`<img src="./plus.svg">`)
+      .html(`<img src="/static/image/plus.svg">`)
       .attr('contenteditable', 'false');
     e.preventDefault();
   }

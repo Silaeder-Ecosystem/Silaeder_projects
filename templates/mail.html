@@ -2,7 +2,7 @@
 <html lang="en ru">
   <head>
     <meta charset="UTF-8">
-    <title>Sign In | Silaeder Projects</title>
+    <title>Mail | Silaeder Projects</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
@@ -19,7 +19,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}  

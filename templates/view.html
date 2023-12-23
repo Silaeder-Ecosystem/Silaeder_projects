@@ -42,7 +42,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
@@ -51,24 +51,24 @@
         <a href="/" class="back">
           <i data-feather="arrow-left-circle" height="30" width="30"></i>
         </a>
-        <p style="font-size: 19px;">&nbsp;{{project.title}}&nbsp;</p>
-        {% if user in project.team %} 
-          <a href="{{project.link.edit}}" class="back">
+        <p style="font-size: 19px;">&nbsp;{{ans[2]}}</p>
+        {% if asset %} 
+          <a href="/projects/{{ans[0]}}/edit" class="back">
             <i data-feather="edit-2" height="30" width="30"></i>
           </a>
         {% endif %}
       </span>
       <div class="saver">
-        <img class="cover" src="/static/{{project.cover}}" alt="cover">
+        <img class="cover" src="/static/{{ans[8]}}" alt="cover">
         <ul class="ttl">
-          <li><span>Topic:</span><span>&nbsp;{{project.topic}}</span></li>
-          <li><span>Teacher:</span><span>&nbsp;{{projects.teacher.name}}</span></li>
-          <li><span>Leader:</span><span>&nbsp;{{projects.leader.name}}</span></li>
+          <li><span>Topic:</span><span>&nbsp;{{ans[6]}}</span></li>
+          <li><span>Leader:</span><span>&nbsp;{{ans[7]}}</span></li>
+          <li><span>Teacher:</span><span>&nbsp;{{ans[12]}}</span></li>
           <li>
             <span style="color: #3d3c3c;">Team:</span>
             <ul class="team">
-              {% for i in project.team %}
-                <li>i.name</li>
+              {% for i in ans[1] %}
+                <li>{{i}}</li>
               {% endfor %}
             </ul> 
           </li>
@@ -76,26 +76,23 @@
       </div>
       <div class="dtl">
         <span class="description">
-          {{project.description}}
+          {{ans[3]}}
         </span>
+        
         <ul style="margin-top: 2px;">
-          {% if project.link.images %}
-            <li><span style="color: #333;">Images:</span>&nbsp;<a href="{{project.link.images}}">Link</a></li>
+          <li><span style="color: #333;">Short description:</span>&nbsp;{{ans[11]}}</li>
+          {% if ans[4] != '' %}
+            <li><span style="color: #333;">Images:</span>&nbsp;{{ans[4]}}</li>
           {% endif %}
-          {% if project.link.presentation %}
-            <li><span style="color: #333;">Presentation:</span>&nbsp;<a href="{{project.link.presentation}}">Link</a></li>
+          {% if ans[-1] != '' %}
+            <li><span style="color: #333;">Presentation:</span>&nbsp;{{ans[10]}}</li>
           {% endif %}
-          {% if project.link.video %}
-            <li><span style="color: #333;">Video:</span>&nbsp;<a href="{{project.link.video}}">Link</a></li>
+          {% if ans[5] != '' %}
+            <li><span style="color: #333;">Video:</span>&nbsp;{{ans[5]}}</li>
           {% endif %}
-          {% if project.link.useful|length != 0 %}
-            <li>
-              <span style="color: #333;">Useful links:</span>&nbsp;
-              {% for i in project.link.useful %}
-                <a href="{{i}}">Link</a> 
-              {% endfor %}
-            </li>
-          {% enduf %}
+          {% if ans[-2] != '' %}
+          <li><span style="color: #333;">Useful Links:</span>&nbsp;{{ans[9]}}</li>
+          {% endif %}
         </ul>
       </div>
     </div>
