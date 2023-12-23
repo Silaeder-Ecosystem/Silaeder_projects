@@ -10,16 +10,12 @@
     <title>Create project | Silaeder Projects</title>
   </head>
   <body>
-    <form class="container">
+    <form class="container" method="POST">
       <h1 class="title">Create Project</h1>
       <div class="form">
         <label for="title" class="text__label">
           <p>Title:</p>
           <input type="text" name="title" id="title" placeholder="Title" autocomplete="off" required/>
-        </label>
-        <label for="teacher" class="text__label">
-          <p>Teacher:</p>
-          <input type="text" name="teacher" id="teacher" placeholder="Name" autocomplete="off" required/>
         </label>
         <label for="leader" class="text__label">
           <p>Leader:</p>
@@ -28,6 +24,10 @@
         <label for="topic" class="text__label">
           <p>Topic:</p>
           <input type="text" name="topic" id="topic" placeholder="Topic" autocomplete="off" required/>
+        </label>
+        <label for="teacher" class="text__label">
+          <p>Teacher:</p>
+          <input type="text" name="teacher" id="teacher" placeholder="Name" autocomplete="off" required/>
         </label>
         <label for="short-description" class="text__label">
           <p>Short description:</p>
@@ -48,6 +48,7 @@
         <div class="text__label team">
           <p>Team:</p>
           <ul>
+            <li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="{{user}}">{{user}}</li>
             <li id="addNewStudent" name="student" class="menu-item-divided"><img height="22" width="22" src="{{ url_for('static', filename='image/plus.svg') }}"></li>
           </ul> 
         </div>
@@ -81,7 +82,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>sendNotification("{{ message.type }}", "{{ message.text }}");</script>
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
