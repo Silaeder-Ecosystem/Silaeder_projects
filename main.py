@@ -205,20 +205,20 @@ def new_projects():
         print()
         app.logger.debug(request.files)
         app.logger.debug(request.form)
-        app.logger.debug(request.form.getlist('collaborators[]'))
+        app.logger.debug(request.form.getlist('team[]'))
         print()
         print()
         for i in ['title', 'description', 'teacher', 'topic', 'short-description', 'leader']:
             if form[i] == '':
                 flash(['error', f"You don't fill {i} field"])
                 return redirect("/projects/new", code=302)
-        for i in request.form.getlist('collaborators[]'):
+        for i in request.form.getlist('team[]'):
             print(i)
             if not db.check_user_is_exist(i):
                 flash(['error', f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
                 return redirect("/projects/new", code=302)
         if 'cover' not in request.files:
-            flash(['error','No file part'])
+            flash(['error','No file loaded'])
             return redirect(f"/projects/new")
         file = request.files['cover']
         if file.filename == '':
@@ -227,14 +227,14 @@ def new_projects():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_id_name = filename.rsplit('.', 1)
-            try:
+            #try:
             #if 1 == 1:
-                if db.create_project(form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-image'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pdf']) == False:
-                    flash(['error','This project already exists'])
-                    return redirect("/projects/new", code=302)
-            except:
-                flash(['error', 'You fill not all fields'])
+            if db.create_project(form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher']) == False:
+                flash(['error','This project already exists'])
                 return redirect("/projects/new", code=302)
+            #except:
+             #   flash(['error', 'You fill not all fields'])
+              #  return redirect("/projects/new", code=302)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()) + '.' + file_id_name[1]))
             flash(['success','Project created'])
             return redirect("/myprojects", code=302)
@@ -252,13 +252,12 @@ def get_projects():
 def get_project(id):
     ans = db.get_project_by_id(id)
     ans = list(ans[0])
-    print(ans)
     token = confirm_token(request.cookies.get("jwt"))
-    return render_template("view.html", ans = ans, user = token, id = id, asset = token in ans[1])
+    return render_template("view.html", ans = ans, user = token, id = id, asset = db.is_user_in_project(id, token))
 
 @app.route('/about', methods=['GET'])
 def about():
-    return render_template('about.html')
+    return render_template('about.html', user=confirm_token(request.cookies.get('jwt')))
 
 @app.route('/projects/<id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
@@ -266,6 +265,9 @@ def edit_project(id):
         token = confirm_token(request.cookies.get("jwt"))
         if not token:
             flash(['error', "You are not logged in"])
+            return redirect('/login') 
+        if not db.is_user_in_project(id, token):
+            flash(['error', "You are not in this project"])
             return redirect('/login') 
         ans = db.get_project_by_id(id)
         ans = list(ans[0])
@@ -276,40 +278,47 @@ def edit_project(id):
         if not token:
             flash(['error', "You are not logged in"])
             return redirect('/login') 
+        if not db.is_user_in_project(id, token):
+            flash(['error', "You are not in this project"])
+            return redirect('/login') 
         form = request.form
         print()
         print()
         app.logger.debug(request.files)
         app.logger.debug(request.form)
-        app.logger.debug(request.form.getlist('collaborators[]'))
         print()
         print()
-        for i in ['name', 'description', 'teacher', 'topic']:
+        for i in ['title', 'description', 'teacher', 'topic', 'short-description', 'leader']:
             if form[i] == '':
                 flash(['error',f"You don't fill {i} field"])
                 return redirect("/projects/new", code=302)
 
-        for i in request.form.getlist('collaborators[]'):
+        if request.form.getlist('team[]') == []:
+            flash(['error', 'Nobody in project. Please add peoples to the project'])
+            return redirect('/projects/'+str(id)+'/edit')
+
+        for i in request.form.getlist('team[]'):
             print(i)
             if not db.check_user_is_exist(i):
                 flash(['error',f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
                 return redirect(f'/projects/{id}/edit', code=302)
 
         if 'cover' not in request.files:
-            flash(['error','No file part'])
+            flash(['error','No file loaded'])
             return redirect(f"/projects/{id}/edit")
         file = request.files['cover']
         if file.filename == '':
-            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(id) + '.' + file_id_name[1], form['link-interes'], form['link-pdf'])
+            filename = db.get_covername_of_project(id)
+            db.update_project(id, form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"], filename, form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
             flash(['success',"Project edited"])
-            return redirect('/myprojects', code=200)
+            return redirect('/myprojects')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file_id_name = filename.rsplit('.', 1)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.' + file_id_name[1]))
-            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('collaborators[]'), form['link-video'], form['link-image'], form["topic"],  str(id) + '.' + file_id_name[1], form['link-interes'], form['link-pdf'])
+            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  str(id) + '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
             flash(['success',"Project edited"])
-            return redirect('/myprojects', code=200)
+            return redirect('/myprojects')
 
 @app.route('/myprojects', methods=['GET'])
 def get_my_projects():

@@ -10,7 +10,7 @@
     <title>Edit project | Silaeder Projects</title>
   </head>
   <body>
-    <form class="container" action="/projects/{{ans[0]}}/edit" method="POST" enctype="multipart/form-data">
+    <form class="container" method="POST" enctype="multipart/form-data">
       <h1 class="title">Edit Project</h1>
       <div class="form">
         <label for="title" class="text__label">
@@ -37,7 +37,7 @@
           <p>Cover (.png, .jpg, .jpeg, .gif):</p>
           <ul>
             <label for="cover" class="file__label">Upload&nbsp;<i data-feather="upload" height="20" width="20"></i></label>
-            <input type="file" name="cover" id="cover" class="cover" accept="image/gif, image/png, image/jpg, image/jpeg" autocomplete="off" required/>
+            <input type="file" name="cover" id="cover" class="cover" accept="image/gif, image/png, image/jpg, image/jpeg" autocomplete="off"/>
             <div class="file" style="display: none;"><span></span>&nbsp;<i data-feather="x" height="20" width="20"></i></div>
           </ul>
         </div>
@@ -71,10 +71,8 @@
           <input type="text" name="link-interes" id="link-interes" placeholder="Link, link..." value="{{ans[-4]}}" autocomplete="off"/>
         </label>
         <div class="text__label submit">
-          <ul>
             <input type="submit" value="Edit" name="submit" id="submit" autocomplete="off">
             <a href="/projects" class="cancel">Cancel</a>
-          </ul>
         </div>
       </div>
     </form>

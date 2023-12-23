@@ -170,6 +170,8 @@ def delete_all():
         return False
     
 def is_user_in_project(id, username):
+    if username == 'admin':
+        return True
     query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN projects.autor_usernames;'
     cursor.execute(query, (username, id, ))
     conn.commit()
@@ -194,6 +196,7 @@ CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, na
     conn.commit() 
     try:
         create_user("admin", "silaederprojects@gmail.com", parse_data("secret_key"), "Admin", "Adminovich")
+        auth_user("admin")
     except:
         pass
     try:
@@ -219,6 +222,11 @@ def search_for_projects(title):
 """
     cursor.execute(query, ('%' + title.lower() + '%', title.lower(), ))
     return cursor.fetchall()
+
+def get_covername_of_project(id):
+    sqlite_select_query = """SELECT main_pic_path FROM projects WHERE id = %s;"""
+    cursor.execute(sqlite_select_query, (id, ))
+    conn.commit() 
 
 def update_user_data(last_username, username, password):
     try:

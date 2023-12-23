@@ -54,10 +54,10 @@
         <a href="/" class="back">
           <i data-feather="arrow-left-circle" height="30" width="30"></i>
         </a>
-        <p style="font-size: 19px;">&nbsp;{{ans[2]}}</p>
+        <p style="font-size: 19px;">&nbsp;{{ans[2]}}&nbsp;</p>
         {% if asset %} 
           <a href="/projects/{{ans[0]}}/edit" class="back">
-            <i data-feather="edit-2" height="30" width="30"></i>
+            <i data-feather="edit-2" height="24" width="24"></i>
           </a>
         {% endif %}
       </span>
@@ -87,13 +87,13 @@
           {% if ans[4] != '' %}
             <li><span style="color: #333;">Images:</span>&nbsp;{{ans[4]}}</li>
           {% endif %}
-          {% if ans[-1] != '' %}
+          {% if ans[10] != '' %}
             <li><span style="color: #333;">Presentation:</span>&nbsp;{{ans[10]}}</li>
           {% endif %}
           {% if ans[5] != '' %}
             <li><span style="color: #333;">Video:</span>&nbsp;{{ans[5]}}</li>
           {% endif %}
-          {% if ans[-2] != '' %}
+          {% if ans[9] != '' %}
           <li><span style="color: #333;">Useful Links:</span>&nbsp;{{ans[9]}}</li>
           {% endif %}
         </ul>
