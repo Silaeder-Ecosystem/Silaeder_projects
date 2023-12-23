@@ -353,7 +353,7 @@ def user(username):
     print(ans)
     return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
 
-@app.route('/settings', method=['GET', 'POST'])
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
     token = confirm_token(request.cookies.get("jwt"))
     if not token:
