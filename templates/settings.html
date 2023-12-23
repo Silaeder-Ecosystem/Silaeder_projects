@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sign In | Silaeder Projects</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+  </head>
+  <body>
+    <form class="form__input" method="POST" action="/login">
+      <a href="/" class="back">
+        <i data-feather="arrow-left-circle" height="30" width="30"></i>
+      </a>
+      <h1 class="form__title">&nbsp;Settings</h1>
+      <input name="email" id="email" type="text" placeholder="Email" autocomplete="off" required/>
+      <input name="password" id="password" type="password" placeholder="Password" autocomplete="off" requred/>
+      <input name="submit" type="submit" value="Submit" id="submit-btn"/>
+    </form>
+    <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}  
+  </body>
+</html>

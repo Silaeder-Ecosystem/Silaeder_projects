@@ -28,6 +28,9 @@
         </li>
         {% if user %}
           <li class="navbar__item">
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Settings</span></a>        
+          </li>
+          <li class="navbar__item">
             <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Sign&nbsp;Out</span></a>        
           </li>
         {% else %}
