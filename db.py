@@ -220,4 +220,6 @@ def search_for_projects(title):
     cursor.execute(query, ('%' + title.lower() + '%', title.lower(), ))
     return cursor.fetchall()
 
+def update_user_data(last_username, username, password)
+
 #print(get_all_usernames())
