@@ -10,7 +10,7 @@
     <title>Create project | Silaeder Projects</title>
   </head>
   <body>
-    <form class="container" method="POST">
+    <form class="container" method="POST" enctype="multipart/form-data">
       <h1 class="title">Create Project</h1>
       <div class="form">
         <label for="title" class="text__label">
@@ -48,6 +48,7 @@
         <div class="text__label team">
           <p><span style="color: red;">*</span>Team:</p>
           <ul>
+            <li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="{{user}}">{{user}}</li>
             <li id="addNewStudent" name="student" class="menu-item-divided"><img height="22" width="22" src="{{ url_for('static', filename='image/plus.svg') }}"></li>
           </ul> 
         </div>
