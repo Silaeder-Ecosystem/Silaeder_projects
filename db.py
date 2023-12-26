@@ -105,11 +105,10 @@ def check_not_auth_user_is_exist(username):
     return cursor.fetchall()
 
 def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher):
-    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
-    print(sqlite3_select_query)
+    sqlite3_select_query = """INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;"""
     cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link,  short_descrip, teacher,))
     conn.commit()
-    return True
+    return str(cursor.fetchall()[0][0]) + main_pic_path
     
 def get_project_by_id(id):
     sqlite3_select_query = """SELECT * FROM projects WHERE id =%s;"""
@@ -118,7 +117,12 @@ def get_project_by_id(id):
     return cursor.fetchall()
 
 def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher):
-    if 1==1:
+    if main_pic_path == None:
+        sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, links =%s, pdf_link=%s, short_descrip=%s, teacher=%s WHERE id =%s;"""
+        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, links, pdf_link, short_descrip, teacher, id, ))
+        conn.commit()
+        return True
+    else:
         sqlite3_update_query = """UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, main_pic_path =%s, links =%s, pdf_link=%s, short_descrip=%s, teacher=%s WHERE id =%s;"""
         cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher, id, ))
         conn.commit()
@@ -170,9 +174,11 @@ def delete_all():
         return False
     
 def is_user_in_project(id, username):
+    if username == 1337:
+        return False
     if username == 'admin':
         return True
-    query= 'SELECT title, teamlead, topic FROM projects WHERE %s IN projects.autor_usernames;'
+    query= 'SELECT title, teamlead, topic FROM projects WHERE %s = ANY(projects.autor_usernames) AND id = %s;'
     cursor.execute(query, (username, id, ))
     conn.commit()
     if cursor.fetchall() != []:
@@ -207,12 +213,6 @@ CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, na
         pass
     return
 
-def count_of_projects():
-    query= 'SELECT MAX(id) FROM projects'
-    cursor.execute(query)
-    conn.commit()
-    return cursor.fetchall()[0][0]
-
 def search_for_projects(title):
     query = """
     SELECT title, teamlead, topic, id, main_pic_path
@@ -237,4 +237,4 @@ def update_user_data(last_username, username, password):
     except:
         return False
 
-#print(get_all_usernames())
+print(get_all_usernames())

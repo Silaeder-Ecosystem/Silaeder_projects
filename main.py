@@ -229,13 +229,14 @@ def new_projects():
             file_id_name = filename.rsplit('.', 1)
             #try:
             #if 1 == 1:
-            if db.create_project(form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  str(db.count_of_projects()+1) + '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher']) == False:
+            proj = db.create_project(form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
+            if proj == False:
                 flash(['error','This project already exists'])
                 return redirect("/projects/new", code=302)
             #except:
              #   flash(['error', 'You fill not all fields'])
               #  return redirect("/projects/new", code=302)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(db.count_of_projects()) + '.' + file_id_name[1]))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], proj))
             flash(['success','Project created'])
             return redirect("/myprojects", code=302)
         else:
@@ -253,7 +254,9 @@ def get_project(id):
     ans = db.get_project_by_id(id)
     ans = list(ans[0])
     token = confirm_token(request.cookies.get("jwt"))
-    return render_template("view.html", ans = ans, user = token, id = id, asset = db.is_user_in_project(id, token))
+    if not token:
+        token = 1337
+    return render_template("view.html", ans = ans, user = confirm_token(request.cookies.get('jwt')), id = id, asset = db.is_user_in_project(id, token))
 
 @app.route('/about', methods=['GET'])
 def about():
@@ -309,7 +312,7 @@ def edit_project(id):
         file = request.files['cover']
         if file.filename == '':
             filename = db.get_covername_of_project(id)
-            db.update_project(id, form['title'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"], filename, form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
+            db.update_project(id, form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"], filename, form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
             flash(['success',"Project edited"])
             return redirect('/myprojects')
         if file and allowed_file(file.filename):
@@ -352,7 +355,7 @@ def delete_project(id):
             except:
                 pass
         flash('Project deleted')
-        return redirect('/projects', code=200)
+        return redirect('/projects')
 
 @app.route('/user/<username>')
 def user(username):
@@ -421,8 +424,8 @@ def settings():
         return redirect('/projects')
 
 if __name__ == "__main__":
-    db.delete_all()
-    db.create_all()
-    db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'Nikita Turbo'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет', 'site_for_Silaeder_projects', 'Olga Starunova')
+    #db.delete_all()
+    #db.create_all()
+    #db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'Nikita Turbo'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет', 'site_for_Silaeder_projects', 'Olga Starunova')
     app.run("0.0.0.0", port=11701, debug=True)
     print('create all')

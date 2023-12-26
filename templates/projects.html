@@ -94,22 +94,22 @@
 										<p>{{i[-1]}}</p>
 									</td>
 									<td class="td__actions">
-										<ul class="actions">
-											<a href="/projects/{{i[3]}}" class="table-link-view 1">
+										<ul class="actions {{i[3]}}">
+											<a href="/projects/{{i[3]}}" class="table-link-view {{i[3]}}">
 												<li class="view">
 													<i data-feather="eye" height="22" width="22"></i>
 												</li>
 											</a>
-											<a href="/projects/{{i[3]}}/edit" class="table-link-edit 1">
+											<a href="/projects/{{i[3]}}/edit" class="table-link-edit {{i[3]}}">
 												<li class="edit">
 													<i data-feather="edit-2" height="22" width="22"></i>
 												</li>
 											</a>
-											<li class="trash 1" link="/projects/{{i[3]}}/delete">
+											<li class="trash {{i[3]}}" link="/projects/{{i[3]}}/delete">
 												<i data-feather="trash-2" height="22" width="22"></i>
 											</li>
 										</ul>
-										<span class="more 1"><i data-feather="more-vertical"></i></span>
+										<span class="more {{i[3]}}"><i data-feather="more-vertical"></i></span>
 									</td>
 								</tr>
 							{% endfor %}

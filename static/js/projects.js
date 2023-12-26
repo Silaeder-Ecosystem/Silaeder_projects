@@ -13,7 +13,7 @@ $(document).mouseup(function (e) {
 $(".more").on("click", function() {
   const menu = $(".column");
   const more = $(".more");
-  const num = more.attr("class").split(" ")[1].toString();
+  const num = $(this).attr("class").split(" ")[1].toString();
   const tableView = $(`.table-link-view.${num}`).attr("href").toString();
   const tableEdit = $(`.table-link-edit.${num}`).attr("href").toString();
   const tableDelete = $(`.trash.${num}`).attr("link").toString();
@@ -25,7 +25,7 @@ $(".more").on("click", function() {
 $(".trash").on("click", function() {
   const menu = $(".delete-column");
   const trash = $(".trash");
-  const num = trash.attr("class").split(" ")[1].toString();
+  const num = $(this).attr("class").split(" ")[1].toString();
   const tableDelete = $(`.trash.${num}`).attr("link").toString();
   $(`.table-link-delete`).attr("href", tableDelete); 
   menu.show();
