@@ -1,6 +1,3 @@
-# Visit https://www.lddgo.net/en/string/pyc-compile-decompile for more information
-# Version : Python 3.10
-
 import psycopg2
 import json
 config_file = open('config.json')
