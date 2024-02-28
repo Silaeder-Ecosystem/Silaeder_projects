@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./
+    volumes:
+      - ./:/app/
+    ports:
+      - 11701:11701
+    depends_on:
+      - pgdb
+
+  pgdb:
+    image: postgres
+    environment:
+      POSTGRES_DB: "silaeder_projects"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "test"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=silaeder_projects@admin.org
+      - PGADMIN_DEFAULT_PASSWORD=test
+    ports:
+      - 11702:80
+    depends_on:
+      - pgdb
+
+volumes:
+  postgres_data:
