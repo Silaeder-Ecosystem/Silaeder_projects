@@ -1,16 +1,19 @@
-# Visit https://www.lddgo.net/en/string/pyc-compile-decompile for more information
-# Version : Python 3.10
+import os
+import sys
+file_path = os.path.dirname(__file__)
+module_path = os.path.join(file_path, "lib")
+sys.path.append(module_path)
 
 import httplib2
 import googleapiclient.discovery as googleapiclient
 from oauth2client.service_account import ServiceAccountCredentials
 import json
-CREDENTIALS_FILE = 'credits.json'
+CREDENTIALS_FILE = 'creditans.json'
 credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, [
     'https://www.googleapis.com/auth/spreadsheets',
     'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
-service = googleapiclient.discovery.build('sheets', 'v4', httpAuth, **('http',))
+service = googleapiclient.build('sheets', 'v4', httpAuth)
 
 def parse_data(field):
     file = open('config.json')
@@ -33,12 +36,11 @@ def parse_csv():
                 
                 try:
                     emails[i] = str(emails[i][0]).lower()
-                finally:
+                except:
                     continue
-                    print(emails)
-                    return emails
+    print(emails)
+    return emails
 
 
 if __name__ == '__main__':
     parse_csv()
-    return None

@@ -425,7 +425,7 @@ def settings():
 
 if __name__ == "__main__":
     #db.delete_all()
-    #db.create_all()
+    db.create_all()
     #db.create_project("Silaeder Projects", "site_for_Silaeder_projects", "ilyastarcek", ['ilyastarcek', 'Nikita Turbo'], "нет", "нет", "IST", 'image/logo.jpg', 'projects.sileder.ru', 'нет', 'site_for_Silaeder_projects', 'Olga Starunova')
     app.run("0.0.0.0", port=11701, debug=True)
     print('create all')

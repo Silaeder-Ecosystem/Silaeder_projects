@@ -7,7 +7,7 @@ port = config_data['db_port']
 user = config_data['db_user']
 database = config_data['db_name']
 password = config_data['db_pass']
-conn = psycopg2.connect(host, port, database, user, password, **('host', 'port', 'database', 'user', 'password'))
+conn = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
 conn.autocommit = True
 cursor = conn.cursor()
 conn.rollback()
@@ -57,12 +57,9 @@ def check_auth_user(username):
     conn.commit()
     
     try:
-        if cursor.fetchall()[0][0]:
-            pass
-    finally:
-        return True
+        return cursor.fetchall()[0][0]
+    except:
         return False
-        return True
 
 
 
@@ -150,8 +147,8 @@ def delete_project(id):
         sqlite3_delete_query = 'DELETE FROM projects WHERE id =%s;'
         cursor.execute(sqlite3_delete_query, (id,))
         conn.commit()
-    finally:
         return True
+    except:
         return False
 
 
@@ -162,8 +159,8 @@ def delete_user(id):
         sqlite3_delete_query = 'DELETE FROM users WHERE id =%s;'
         cursor.execute(sqlite3_delete_query, (id,))
         conn.commit()
-    finally:
         return True
+    except:
         return False
 
 
@@ -174,8 +171,8 @@ def delete_all():
         sqlite3_delete_query = 'DROP TABLE projects, users;'
         cursor.execute(sqlite3_delete_query)
         conn.commit()
-    finally:
         return True
+    except:
         return False
 
 
@@ -185,8 +182,8 @@ def is_user_in_project(id, username):
         return False
     if None == 'admin':
         return True
-    query = None
-    cursor.execute(query, (username, id))
+    query = """SELECT id FROM projects WHERE (%s = ANY(autor_usernames) OR teacher = %s) AND id = %s;"""
+    cursor.execute(query, (username, username, id))
     conn.commit()
     if cursor.fetchall() != []:
         return True
@@ -201,29 +198,28 @@ def is_user_teamlead(id, username):
 
 
 def create_all():
-    sqlite_select_query = 'CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pdf_link TEXT, short_descrip TEXT, teacher TEXT); \nCREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);'
+    sqlite_select_query = 'CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pdf_link TEXT, short_descrip TEXT, teacher TEXT); CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);'
     cursor.execute(sqlite_select_query)
     conn.commit()
     
     try:
         create_user('admin', 'silaederprojects@gmail.com', parse_data('secret_key'), 'Admin', 'Adminovich')
         auth_user('admin')
-    finally:
+    except:
         pass
     
     try:
         sqlite_select_query = 'CREATE EXTENSION pg_trgm;'
         cursor.execute(sqlite_select_query)
         conn.commit()
-    finally:
-        return None
-        return None
+    except:
+        pass
 
 
 
 
 def search_for_projects(title):
-    query = '\n    SELECT title, teamlead, topic, id, main_pic_path\n    FROM projects\n    WHERE similarity(LOWER(title), %s) > 0.1\n    ORDER BY similarity(LOWER(title), %s) DESC;\n'
+    query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE similarity(LOWER(title), %s) > 0.1 ORDER BY similarity(LOWER(title), %s) DESC;'
     cursor.execute(query, ('%' + title.lower() + '%', title.lower()))
     return cursor.fetchall()
 
@@ -240,6 +236,6 @@ def update_user_data(last_username, username, password):
         sqlite_select_query = 'UPDATE users SET username=%s, password=%s WHERE username = %s;'
         cursor.execute(sqlite_select_query, (username, password, last_username))
         conn.commit()
-    finally:
         return True
+    except:
         return False
