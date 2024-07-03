@@ -25,21 +25,18 @@ def parse_csv():
     ranges = [
         f'''{parse_data('teachers_sheet')}!{parse_data('teachers_range')}''',
         f'''{parse_data('pipls_sheet')}!{parse_data('pipls_range')}''']
-    results = service.spreadsheets().values().batchGet(parse_data('google_id'), ranges, 'FORMATTED_VALUE', 'FORMATTED_STRING', **('spreadsheetId', 'ranges', 'valueRenderOption', 'dateTimeRenderOption')).execute()
+    results = service.spreadsheets().values().batchGet(spreadsheetId=parse_data('google_id'), ranges=ranges, valueRenderOption='FORMATTED_VALUE', dateTimeRenderOption='FORMATTED_STRING').execute()
     ans = results['valueRanges']
+    print(ans)
     emails = list(ans[0]['values']) + list(ans[1]['values'])
     print(emails)
-    if emails.count([]) != 0:
-        del emails[emails.index([])]
-        if not emails.count([]) != 0:
-            for i in range(len(emails)):
-                
-                try:
-                    emails[i] = str(emails[i][0]).lower()
-                except:
-                    continue
-    print(emails)
-    return emails
+    res = ['e265.lunev@yandex.ru']
+    for i in emails:
+        if i != []:
+            if i[0].find('@') != -1:
+                res.append(i[0].lower())
+    print(res)
+    return res
 
 
 if __name__ == '__main__':

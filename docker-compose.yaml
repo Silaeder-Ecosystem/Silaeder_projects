@@ -15,7 +15,7 @@ services:
     environment:
       POSTGRES_DB: "silaeder_projects"
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "test"
+      POSTGRES_PASSWORD: "XAdqjYR79EfDQk6_CzcS5T"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
@@ -24,7 +24,7 @@ services:
     image: dpage/pgadmin4
     environment:
       - PGADMIN_DEFAULT_EMAIL=silaeder_projects@admin.org
-      - PGADMIN_DEFAULT_PASSWORD=test
+      - PGADMIN_DEFAULT_PASSWORD=XAdqjYR79EfDQk6_CzcS5T
     ports:
       - 11702:80
     depends_on:

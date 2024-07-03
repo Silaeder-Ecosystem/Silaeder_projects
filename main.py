@@ -21,8 +21,8 @@ def parse_data(field):
 app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'silaederprojects@gmail.com'  
-app.config['MAIL_DEFAULT_SENDER'] = 'silaederprojects@gmail.com'  
+app.config['MAIL_USERNAME'] = parse_data('mail')
+app.config['MAIL_DEFAULT_SENDER'] = parse_data('mail')
 app.config['MAIL_PASSWORD'] = parse_data("mail_password")
 app.config['UPLOAD_FOLDER'] = './static/'
 
@@ -217,6 +217,9 @@ def new_projects():
             if not db.check_user_is_exist(i):
                 flash(['error', f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
                 return redirect("/projects/new", code=302)
+        if not db.check_user_is_exist(form['teacher']):
+            flash(['error',f"Teacher isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+            return redirect(f'/projects/new', code=302)
         if 'cover' not in request.files:
             flash(['error','No file loaded'])
             return redirect(f"/projects/new")
@@ -305,7 +308,9 @@ def edit_project(id):
             if not db.check_user_is_exist(i):
                 flash(['error',f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
                 return redirect(f'/projects/{id}/edit', code=302)
-
+        if not db.check_user_is_exist(form['teacher']):
+            flash(['error',f"Teacher isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+            return redirect(f'/projects/{id}/edit', code=302)
         if 'cover' not in request.files:
             flash(['error','No file loaded'])
             return redirect(f"/projects/{id}/edit")

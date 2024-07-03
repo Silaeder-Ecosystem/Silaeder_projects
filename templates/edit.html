@@ -17,21 +17,21 @@
           <p><span style="color: red;">*</span>Title:</p>
           <input type="text" name="title" id="title" placeholder="Title" value="{{ans[2]}}" autocomplete="off" required/>
         </label>
+        <label for="teacher" class="text__label">
+          <p><span style="color: red;">*</span>Teacher:</p>
+          <input type="text" name="teacher" id="teacher" placeholder="Username" value="{{ans[12]}}" autocomplete="off" required/>
+        </label>
         <label for="leader" class="text__label">
           <p><span style="color: red;">*</span>Leader:</p>
           <input type="text" name="leader" id="leader" placeholder="Name" value="{{ans[7]}}" autocomplete="off" required/>
         </label>
         <label for="topic" class="text__label">
-          <p><span style="color: red;">*</span>Topic:</p>
-          <input type="text" name="topic" id="topic" placeholder="Topic" value="{{ans[6]}}" autocomplete="off" required/>
+          <p><span style="color: red;">*</span>Section:</p>
+          <input type="text" name="topic" id="topic" placeholder="Name of section" value="{{ans[6]}}" autocomplete="off" required/>
         </label>
-        <label for="teacher" class="text__label">
-          <p><span style="color: red;">*</span>Teacher:</p>
-          <input type="text" name="teacher" id="teacher" placeholder="Name" value="{{ans[12]}}" autocomplete="off" required/>
-        </label>
-        <label for="short-description" class="text__label">
+        <label for="short_description" class="text__label">
           <p><span style="color: red;">*</span>Short description:</p>
-          <input type="text" name="short-description" id="short-description" placeholder="Short description" value="{{ans[11]}}" autocomplete="off" required/>
+          <input type="text" name="short_description" id="short_description" placeholder="Short description" value="{{ans[11]}}" autocomplete="off" required/>
         </label>
         <div class="text__label cover__label">
           <p><span style="color: red;">*</span>Cover (.png, .jpg, .jpeg, .gif):</p>
@@ -54,29 +54,30 @@
             <li id="addNewStudent" name="student" class="menu-item-divided"><img height="22" width="22" src="{{ url_for('static', filename='image/plus.svg') }}"></li>
           </ul> 
         </div>
-        <label for="link-images" class="text__label">
+        <label for="link_images" class="text__label">
           <p>Images:</p>
-          <input type="text" name="link-images" id="link-images" placeholder="Link" value="{{ans[4]}}" autocomplete="off"/>
+          <input type="text" name="link_images" id="link_images" placeholder="Link" value="{{ans[4]}}" autocomplete="off"/>
         </label>
-        <label for="link-pres" class="text__label">
+        <label for="link_pres" class="text__label">
           <p>Presentation:</p>
-          <input type="text" name="link-pres" id="link-pres" placeholder="Link" value="{{ans[-3]}}" autocomplete="off"/>
+          <input type="text" name="link_pres" id="link_pres" placeholder="Link" value="{{ans[-3]}}" autocomplete="off"/>
         </label>
-        <label for="link-video" class="text__label">
+        <label for="link_video" class="text__label">
           <p>Video:</p>
-          <input type="text" name="link-video" id="link-video" placeholder="Link" value="{{ans[5]}}" autocomplete="off"/>
+          <input type="text" name="link_video" id="link_video" placeholder="Link" value="{{ans[5]}}" autocomplete="off"/>
         </label>
-        <label for="link-interes" class="text__label">
+        <label for="link_interes" class="text__label">
           <p>Useful links:</p>
-          <input type="text" name="link-interes" id="link-interes" placeholder="Link, link..." value="{{ans[-4]}}" autocomplete="off"/>
+          <input type="text" name="link_interes" id="link_interes" placeholder="Link, link..." value="{{ans[-4]}}" autocomplete="off"/>
         </label>
         <div class="text__label submit">
             <ul>
               <input type="submit" value="Edit" name="submit" id="submit" autocomplete="off">
               <a href="/projects" class="cancel">Cancel</a>
             </ul>
+          </div>
         </div>
-      </div>
+        <p>If project don't submit check the field with cover</p>
     </form>
     <div class="notification__box"></div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>

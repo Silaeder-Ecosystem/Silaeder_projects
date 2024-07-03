@@ -2,12 +2,8 @@ import psycopg2
 import json
 config_file = open('config.json')
 config_data = json.load(config_file)
-host = config_data['db_host']
-port = config_data['db_port']
-user = config_data['db_user']
-database = config_data['db_name']
-password = config_data['db_pass']
-conn = psycopg2.connect(host=host, port=port, database=database, user=user, password=password)
+db = config_data['db']
+conn = psycopg2.connect(db)
 conn.autocommit = True
 cursor = conn.cursor()
 conn.rollback()
@@ -77,14 +73,21 @@ def get_is_user_logged_in(username, password):
     ans = cursor.fetchall()
     if ans != []:
         return ans[0]
+    sqlite3_select_query = 'SELECT auth FROM users WHERE email =%s AND password =%s;'
+    cursor.execute(sqlite3_select_query, (username.lower(), password))
+    conn.commit()
+    ans = cursor.fetchall()
+    if ans != []:
+        return ans[0]
 
 
 def check_user_is_exist(username):
-    sqlite3_select_query = 'SELECT username FROM users WHERE username =%s AND auth = true;'
-    cursor.execute(sqlite3_select_query, (username,))
+    sqlite3_select_query = 'SELECT username FROM users WHERE (username =%s OR email=%s) AND auth = true;'
+    cursor.execute(sqlite3_select_query, (username, username,))
     conn.commit()
     if cursor.fetchall() == []:
         return False
+    return True
 
 
 def check_not_auth_user_is_exist(username):
@@ -184,6 +187,15 @@ def is_user_in_project(id, username):
         return True
     query = """SELECT id FROM projects WHERE (%s = ANY(autor_usernames) OR teacher = %s) AND id = %s;"""
     cursor.execute(query, (username, username, id))
+    conn.commit()
+    if cursor.fetchall() != []:
+        return True
+    query = """SELECT email FROM users WHERE username = %s;"""
+    cursor.execute(query, (username))
+    conn.commit()
+    email = cursor.fetchall()[0][0]
+    query = """SELECT id FROM projects WHERE (%s = ANY(autor_usernames) OR teacher = %s) AND id = %s;"""
+    cursor.execute(query, (email, email, id))
     conn.commit()
     if cursor.fetchall() != []:
         return True
