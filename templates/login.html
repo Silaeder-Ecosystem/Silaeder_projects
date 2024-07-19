@@ -2,7 +2,7 @@
 <html lang="en ru">
   <head>
     <meta charset="UTF-8">
-    <title>Sign In | Silaeder Projects</title>
+    <title>Войти | Проекты Силаэдра</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
@@ -10,12 +10,12 @@
   </head>
   <body>
     <form class="form__input" method="POST" action="/login">
-      <h1 class="form__title">Sign In</h1>
-      <input name="email" id="email" type="text" placeholder="Nickname" autocomplete="off" required/>
-      <input name="password" id="password" type="password" placeholder="Password" autocomplete="off" requred/>
-      <input name="submit" type="submit" value="Sign In" id="submit-btn"/>
+      <h1 class="form__title">Войти</h1>
+      <input name="email" id="email" type="text" placeholder="Никнейм" autocomplete="off" required/>
+      <input name="password" id="password" type="password" placeholder="Пароль" autocomplete="off" requred/>
+      <input name="submit" type="submit" value="Войти" id="submit-btn"/>
       <div class="link">
-        <a href="/register">If you don't authenticated</a>
+        <a href="/register">Если вы не зарегистрированы</a>
       </div>
     </form>
     <div class="notification__box"></div>

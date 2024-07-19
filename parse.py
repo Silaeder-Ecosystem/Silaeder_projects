@@ -30,7 +30,7 @@ def parse_csv():
     print(ans)
     emails = list(ans[0]['values']) + list(ans[1]['values'])
     print(emails)
-    res = ['e265.lunev@yandex.ru']
+    res = parse_data('white_list')
     for i in emails:
         if i != []:
             if i[0].find('@') != -1:

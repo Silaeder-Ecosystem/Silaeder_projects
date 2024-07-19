@@ -1,5 +1,6 @@
 import psycopg2
 import json
+import hashlib
 config_file = open('config.json')
 config_data = json.load(config_file)
 db = config_data['db']
@@ -15,7 +16,7 @@ def parse_data(field):
 
 
 def get_all_projects():
-    sqlite_select_query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects;'
+    sqlite_select_query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects ORDER BY id DESC;'
     cursor.execute(sqlite_select_query)
     conn.commit()
     return cursor.fetchall()
@@ -97,9 +98,9 @@ def check_not_auth_user_is_exist(username):
     return cursor.fetchall()
 
 
-def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher):
-    sqlite3_select_query = 'INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;'
-    cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher))
+def create_project(title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pres, short_descrip, teacher):
+    sqlite3_select_query = 'INSERT INTO projects (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pres, short_descrip, teacher) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING id;'
+    cursor.execute(sqlite3_select_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pres, short_descrip, teacher))
     conn.commit()
     return str(cursor.fetchall()[0][0]) + main_pic_path
 
@@ -111,14 +112,14 @@ def get_project_by_id(id):
     return cursor.fetchall()
 
 
-def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher):
+def update_project(id, title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pres, short_descrip, teacher):
     if main_pic_path == None:
-        sqlite3_update_query = 'UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, links =%s, pdf_link=%s, short_descrip=%s, teacher=%s WHERE id =%s;'
-        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, links, pdf_link, short_descrip, teacher, id))
+        sqlite3_update_query = 'UPDATE projects SET title =%s, descrip =%s, teamlead =%s, autor_usernames = %s, video_link =%s, dir_with_pic =%s, topic =%s, links =%s, pres=%s, short_descrip=%s, teacher=%s WHERE id =%s;'
+        cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, links, pres, short_descrip, teacher, id))
         conn.commit()
         return True
     sqlite3_update_query = None
-    cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pdf_link, short_descrip, teacher, id))
+    cursor.execute(sqlite3_update_query, (title, descrip, teamlead, autor_usernames, video_link, dir_with_pic, topic, main_pic_path, links, pres, short_descrip, teacher, id))
     conn.commit()
     return True
 
@@ -191,7 +192,7 @@ def is_user_in_project(id, username):
     if cursor.fetchall() != []:
         return True
     query = """SELECT email FROM users WHERE username = %s;"""
-    cursor.execute(query, (username))
+    cursor.execute(query, (username,))
     conn.commit()
     email = cursor.fetchall()[0][0]
     query = """SELECT id FROM projects WHERE (%s = ANY(autor_usernames) OR teacher = %s) AND id = %s;"""
@@ -210,12 +211,12 @@ def is_user_teamlead(id, username):
 
 
 def create_all():
-    sqlite_select_query = 'CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pdf_link TEXT, short_descrip TEXT, teacher TEXT); CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);'
+    sqlite_select_query = 'CREATE TABLE IF NOT EXISTS projects(id SERIAL PRIMARY KEY, autor_usernames TEXT ARRAY, title TEXT, descrip TEXT, dir_with_pic TEXT, video_link TEXT, topic TEXT, teamlead TEXT, main_pic_path TEXT, links TEXT, pres TEXT, short_descrip TEXT, teacher TEXT); CREATE TABLE IF NOT EXISTS users(id SERIAL PRIMARY KEY, username TEXT UNIQUE, name TEXT, surname TEXT, password TEXT, auth BOOL, email TEXT UNIQUE);'
     cursor.execute(sqlite_select_query)
     conn.commit()
     
     try:
-        create_user('admin', 'silaederprojects@gmail.com', parse_data('secret_key'), 'Admin', 'Adminovich')
+        create_user('admin', 'silaederprojects@gmail.com', hashlib.sha256(parse_data('secret_key').encode('utf-8')).hexdigest(), 'Admin', 'Adminovich')
         auth_user('admin')
     except:
         pass
@@ -230,9 +231,21 @@ def create_all():
 
 
 
-def search_for_projects(title):
-    query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE similarity(LOWER(title), %s) > 0.1 ORDER BY similarity(LOWER(title), %s) DESC;'
-    cursor.execute(query, ('%' + title.lower() + '%', title.lower()))
+def search_for_projects(title, topic):
+    if topic == '':
+        if title == '':
+            query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects ORDER BY id DESC;'
+            cursor.execute(query)
+        else:
+            query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE similarity(LOWER(title), %s) > 0.1 ORDER BY similarity(LOWER(title), %s) DESC;'
+            cursor.execute(query, ('%' + title.lower() + '%', title.lower()))
+    else:
+        if title == '':
+            query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE topic = %s ORDER BY id DESC;'
+            cursor.execute(query, (topic, ))
+        else:
+            query = 'SELECT title, teamlead, topic, id, main_pic_path FROM projects WHERE similarity(LOWER(title), %s) > 0.1 AND topic = %s ORDER BY similarity(LOWER(title), %s) DESC;'
+            cursor.execute(query, ('%' + title.lower() + '%', topic, title.lower()))
     return cursor.fetchall()
 
 
@@ -251,3 +264,15 @@ def update_user_data(last_username, username, password):
         return True
     except:
         return False
+
+def get_presentation_of_project(id):
+    sqlite_select_query = 'SELECT pres FROM projects WHERE id = %s;'
+    cursor.execute(sqlite_select_query, (id,))
+    conn.commit()
+    return cursor.fetchall()[0][0]
+
+def update_project_presentation(id, presentation):
+    sqlite_select_query = 'UPDATE projects SET pres = %s WHERE id = %s;'
+    cursor.execute(sqlite_select_query, (presentation, id))
+    conn.commit()
+    return True

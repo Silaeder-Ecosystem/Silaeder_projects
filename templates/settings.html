@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en ru">
+<html lang="ru">
   <head>
     <meta charset="UTF-8">
-    <title>Settings | Silaeder Projects</title>
+    <title>Настройки | Проекты Силаэдра</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
@@ -11,11 +11,11 @@
   </head>
   <body>
     <form class="form__input" method="POST" action="/settings">
-      <h1 class="form__title">Settings</h1>
-      <input name="name" id="email" type="text" placeholder="Nickname" autocomplete="off" required/>
-      <input name="password" id="password" type="password" placeholder="Password" autocomplete="off" requred/>
-      <input name="password2" id="password" type="password" placeholder="Repeat password" autocomplete="off" requred/>
-      <input name="submit" type="submit" value="Submit" id="submit-btn"/>
+      <h1 class="form__title">Настройки</h1>
+      <input name="name" id="email" type="text" placeholder="Никнейм" autocomplete="off" required/>
+      <input name="password" id="password" type="password" placeholder="Пароль" autocomplete="off" required/>
+      <input name="password2" id="password" type="password" placeholder="Повторите пароль" autocomplete="off" required/>
+      <input name="submit" type="submit" value="Отправить" id="submit-btn"/>
     </form>
     <div class="notification__box"></div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>

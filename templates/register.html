@@ -2,23 +2,68 @@
 <html lang="en ru">
   <head>
     <meta charset="UTF-8">
-    <title>Sign Up | Silaeder Projects</title>
+    <title>Регистрация | Проекты Силаэдра</title>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
   </head>
   <body>
     <form class="form__input" method="POST" action="/register">
-      <h1 class="form__title">Sign Up</h1>
-      <input name="username" id="username" type="text" placeholder="Nickname" autocomplete="off" required/>
-      <input name="name" id="name" type="text" placeholder="Name" autocomplete="off" required/>
-      <input name="surname" id="surname" type="text" placeholder="Surname" autocomplete="off" required/>
-      <input name="email" id="email" type="email" placeholder="Email" autocomplete="off" required/>
-      <input name="password" id="password" type="password" placeholder="Password" autocomplete="off" requred/>
-      <input name="submit" type="submit" value="Sign Up" id="submit-btn"/>
+      <h1 class="form__title">Регистрация</h1>
+      <input name="username" id="username" type="text" placeholder="Никнейм" autocomplete="off" required/>
+      <input name="name" id="name" type="text" placeholder="Имя" autocomplete="off" required/>
+      <input name="surname" id="surname" type="text" placeholder="Фамилия" autocomplete="off" required/>
+      <input name="email" id="email" type="email" placeholder="Электронная почта" autocomplete="off" required/>
+      <input name="password" id="password" type="password" placeholder="Пароль" autocomplete="off" requred/>
+      <input name="confirm_password" id="confirm_password" type="password" placeholder="Подтвердите пароль" autocomplete="off" requred/>
+      <p class="form__text">Пароль должен содержать:</p>
+      <ul class="form__requirements">
+        <li id="length" class="invalid">Минимум 8 символов</li>
+        <li id="uppercase" class="invalid">Хотя бы одну заглавную букву</li>
+        <li id="lowercase" class="invalid">Хотя бы одну строчную букву</li>
+        <li id="number" class="invalid">Хотя бы одну цифру</li>
+        <li id="special" class="invalid">Хотя бы один специальный символ</li>
+        <li id="match" class="invalid">Пароли должны совпадать</li>
+      </ul>
+      <script>
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const lengthRequirement = document.getElementById('length');
+        const uppercaseRequirement = document.getElementById('uppercase');
+        const lowercaseRequirement = document.getElementById('lowercase');
+        const numberRequirement = document.getElementById('number');
+        const specialRequirement = document.getElementById('special');
+        const matchRequirement = document.getElementById('match');
+
+        function validatePassword() {
+          const value = passwordInput.value;
+          lengthRequirement.classList.toggle('valid', value.length >= 8);
+          lengthRequirement.classList.toggle('invalid', value.length < 8);
+
+          uppercaseRequirement.classList.toggle('valid', /[A-Z]/.test(value));
+          uppercaseRequirement.classList.toggle('invalid', !/[A-Z]/.test(value));
+
+          lowercaseRequirement.classList.toggle('valid', /[a-z]/.test(value));
+          lowercaseRequirement.classList.toggle('invalid', !/[a-z]/.test(value));
+
+          numberRequirement.classList.toggle('valid', /[0-9]/.test(value));
+          numberRequirement.classList.toggle('invalid', !/[0-9]/.test(value));
+
+          specialRequirement.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(value));
+          specialRequirement.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(value));
+
+          matchRequirement.classList.toggle('valid', value === confirmPasswordInput.value);
+          matchRequirement.classList.toggle('invalid', value !== confirmPasswordInput.value);
+        }
+
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', validatePassword);
+      </script>
+      <input name="submit" type="submit" value="Регистрация" id="submit-btn"/>
       <div class="link">
-        <a href="/login">If you authenticated</a>
+        <a href="/login">Если вы уже зарегистрированы</a>
       </div>
     </form>
     <div class="notification__box"></div>

@@ -8,33 +8,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
-    <title>View project | Silaeder Projects</title>
+    <title>Просмотр проекта | Проекты Силаэдра</title>
   </head>
   <body>
     <nav class="navbar" style="z-index: 1;">
       <ul class="navbar__menu"> 
         <li class="navbar__item">
-          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Home</span></a>
+          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Главная</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
+          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Поиск</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Проекты</span></a>        
         </li>
         <li class="navbar__item">
-          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
+          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>О нас</span></a>        
         </li>
         {% if user %}
           <li class="navbar__item">
-            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Settings</span></a>        
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Настройки</span></a>        
           </li>
           <li class="navbar__item">
-            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Sign&nbsp;Out</span></a>        
+            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Выйти</span></a>        
           </li>
         {% else %}
           <li class="navbar__item">
-            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Sign&nbsp;In</span></a>        
+            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Войти</span></a>        
           </li>
         {% endif %}
       </ul>
@@ -64,11 +64,11 @@
       <div class="saver">
         <img class="cover" src="/static/{{ans[0]}}{{ans[8]}}" alt="cover">
         <ul class="ttl">
-          <li><span>Topic:</span><span>&nbsp;{{ans[6]}}</span></li>
-          <li><span>Leader:</span><span>&nbsp;{{ans[7]}}</span></li>
-          <li><span>Teacher:</span><span>&nbsp;{{ans[12]}}</span></li>
+          <li><span>Тема:</span><span>&nbsp;{{ans[6]}}</span></li>
+          <li><span>Лидер:</span><span>&nbsp;{{ans[7]}}</span></li>
+          <li><span>Учитель:</span><span>&nbsp;{{ans[12]}}</span></li>
           <li>
-            <span style="color: #3d3c3c;">Team:</span>
+            <span style="color: #3d3c3c;">Команда:</span>
             <ul class="team">
               {% for i in ans[1] %}
                 <li>{{i}}</li>
@@ -83,18 +83,18 @@
         </span>
         
         <ul style="margin-top: 2px;">
-          <li><span style="color: #333;">Short description:</span>&nbsp;{{ans[11]}}</li>
+          <li><span style="color: #333;">Краткое описание:</span>&nbsp;{{ans[11]}}</li>
           {% if ans[4] != '' %}
-            <li><span style="color: #333;">Images:</span>&nbsp;{{ans[4]}}</li>
+            <li><span style="color: #333;">Изображения:</span>&nbsp;{{ans[4]}}</li>
           {% endif %}
           {% if ans[10] != '' %}
-            <li><span style="color: #333;">Presentation:</span>&nbsp;{{ans[10]}}</li>
+            <li><span style="color: #333;">Презентация:</span>&nbsp;<a style="color: blue;" href="/static/{{ans[0]}}{{ans[10]}}" target="_blank">{{ans[0]}}{{ans[10]}}</a></li>
           {% endif %}
           {% if ans[5] != '' %}
-            <li><span style="color: #333;">Video:</span>&nbsp;{{ans[5]}}</li>
+            <li><span style="color: #333;">Видео:</span>&nbsp;{{ans[5]}}</li>
           {% endif %}
           {% if ans[9] != '' %}
-          <li><span style="color: #333;">Useful Links:</span>&nbsp;{{ans[9]}}</li>
+          <li><span style="color: #333;">Полезные ссылки:</span>&nbsp;{{ans[9]}}</li>
           {% endif %}
         </ul>
       </div>

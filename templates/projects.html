@@ -2,7 +2,7 @@
 <html lang="en ru">
 	<head>
 		<meta charset="UTF-8" />
-		<title>Projects | Silaeder Projects</title>
+		<title>Проекты | Проекты Силаэдра</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"/>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css"/>
@@ -18,27 +18,27 @@
     <nav class="navbar" style="z-index: 1;">
       <ul class="navbar__menu"> 
         <li class="navbar__item">
-          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Home</span></a>
+          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Главная</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
+          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Поиск</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Мои проекты</span></a>        
         </li>
         <li class="navbar__item">
-          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
+          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>О нас</span></a>        
         </li>
         {% if user %}
           <li class="navbar__item">
-            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Settings</span></a>        
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Настройки</span></a>        
           </li>
           <li class="navbar__item">
-            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Sign&nbsp;Out</span></a>        
+            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Выйти</span></a>        
           </li>
         {% else %}
           <li class="navbar__item">
-            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Sign&nbsp;In</span></a>        
+            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Войти</span></a>        
           </li>
         {% endif %}
       </ul>
@@ -56,8 +56,8 @@
 				<div class="container projects">
 					<div class="projects-inner">
 						<header class="projects-header">
-							<div class="title">Projects</div>
-							<div class="count">{{projects|length}} project</div>
+							<div class="title">Проекты</div>
+							<div class="count">{{projects|length}} проект</div>
 							<a href="/projects/new">
 								<span class="glyphicon">
 									<i data-feather="plus-circle"></i>
@@ -67,11 +67,11 @@
 						<table class="projects-table">
 							<thead>
 								<tr>
-									<th class="th__name">Name</th>
-									<th class="th__leader">Leader</th>
-									<th class="th__team">Team</th>
-									<th class="th__team">Teacher</th>
-									<th class="th__actions">Actions</th>
+									<th class="th__name">Название</th>
+									<th class="th__leader">Лидер</th>
+									<th class="th__team">Команда</th>
+									<th class="th__team">Учитель</th>
+									<th class="th__actions">Действия</th>
 								</tr>
 							</thead> 
 							{% for i in projects %}
@@ -121,21 +121,21 @@
 						<div class="dropdown-slider">
 							<ul class="dropdown-actions">
 								<a href="#" class="dropdown-link-view">
-									<li class="dropdown-action">View</li>
+									<li class="dropdown-action">Просмотр</li>
 								</a>
 								<a href="#" class="dropdown-link-edit">
-									<li class="dropdown-action">Edit</li></a>
-								<li class="dropdown-action is-destroy">Delete</li>
+									<li class="dropdown-action">Редактировать</li></a>
+								<li class="dropdown-action is-destroy">Удалить</li>
 							</ul>
 							<div class="dropdown-confirm">
 								<div class="dropdown-confirm-message">
-									<div class="dropdown-confirm-title">Delete this?</div>
+									<div class="dropdown-confirm-title">Удалить?</div>
 								</div>
 								<ul class="dropdown-confirm-actions">
 									<a href="#" class="dropdown-link-delete">
-										<li class="dropdown-action is-destroy">Delete</li>
+										<li class="dropdown-action is-destroy">Удалить</li>
 									</a>
-									<li class="dropdown-action">Cancel</li>
+									<li class="dropdown-action">Отмена</li>
 								</ul>
 							</div>
 						</div>
@@ -144,19 +144,19 @@
 				<div class="delete-column" style="display: none">
 					<div class="delete-confirm">
 						<div class="message">
-							<p>Delete this?</p>
+							<p>Удалить?</p>
 						</div>
 						<ul>
 							<a href="#" class="table-link-delete">
-								<li class="action delete">Delete</li>
+								<li class="action delete">Удалить</li>
 							</a>
-							<li class="action cancel">Cancel</li>
+							<li class="action cancel">Отмена</li>
 						</ul>
 					</div>
 				</div>
 		<script src="https://unpkg.com/feather-icons"></script>
-		<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
-		<script src="{{ url_for('static', filename='js/feather.js') }}"></script>
+			<script src="{{ url_for('static', filename='js/projects.js') }}"></script>
+			<script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
+			<script src="{{ url_for('static', filename='js/feather.js') }}"></script>
 	</body>
 </html>

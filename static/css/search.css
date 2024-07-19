@@ -31,7 +31,7 @@
 }
 .search__form input {
   margin: 12px 0px;
-  padding: 14px 20px;
+  padding: 8px 20px;
   padding-left: 40px;
   border: none;
   border-radius: 10px;
@@ -46,4 +46,20 @@
 }
 .search__form input:focus, .search__form input:active {
   outline: none;
+}
+.cool_search {
+  z-index: 1;
+  display: inline-block;
+  border: 1px solid #00000000!important;
+  border-radius: 10px;
+  height: 7vh;
+  text-align: center;
+  background-color: #eeeeee;
+  transition: 0.2s;
+}
+.cool_search:hover {
+  border: 1px solid #555!important;
+  outline: none;
+  background-color: #e2e2e2;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
 }

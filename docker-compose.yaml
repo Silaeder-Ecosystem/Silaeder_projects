@@ -29,6 +29,18 @@ services:
       - 11702:80
     depends_on:
       - pgdb
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+#  nginx:
+#    image: nginx:latest
+#    ports:
+#      - 80:80
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf
+#    depends_on:
+#      - web
 
 volumes:
   postgres_data:
+  pgadmin_data:

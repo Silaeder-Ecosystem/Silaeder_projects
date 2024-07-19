@@ -154,3 +154,42 @@ input[type="submit"]:hover {
 .cancel:hover {
   background-color: var(--red-hover);
 }
+
+.presentation {
+  margin: 12px 0;
+}
+.presentation input[type="file"] {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.presentation .file__label {
+  padding: 11px;
+  background-color: var(--green);
+  color: white;
+  border-radius: 10px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.presentation .file__label:hover {
+  background-color: var(--green-hover);
+}
+.presentation .file, .cover .file {
+  margin: 12px;
+  padding: 11px;
+  background-color: #eeeeee;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.presentation .file span, .cover .file span {
+  color: #555;
+}
+.presentation .file i, .cover .file i {
+  cursor: pointer;
+  transition: 0.2s;
+}
+.presentation .file i:hover, .cover .file i:hover {
+  color: red;
+}

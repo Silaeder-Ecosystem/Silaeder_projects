@@ -6,21 +6,48 @@ $(document).keydown(function(e) {
   }
 });
 
-$("#cover").on("change", function() {
-  const menu = $(".file");
-  const name = $(".file span");
-  const cancel = $(".file svg");
-  if ($("#cover").val() != ''){
-	  name.html($("#cover")[0].files[0].name);
-    menu.show();
-    cancel.click(function() {
-      $("#cover").val(null);
-      $(".file").hide();
+$(document).ready(function() {
+  $("#cover").on("change", function() {
+    const fileInput = $(this);
+    const fileName = fileInput[0].files[0].name;
+    const fileDisplay = fileInput.next(".file");
+    const fileNameSpan = fileDisplay.find("span");
+    const cancelIcon = fileDisplay.find("i");
+
+    if (fileName) {
+      fileNameSpan.text(fileName);
+      fileDisplay.show();
+    } else {
+      fileDisplay.hide();
+    }
+
+    cancelIcon.on("click", function() {
+      fileInput.val(null);
+      fileNameSpan.text("");
+      fileDisplay.hide();
     });
-  }
-  else {
-    menu.hide();
-  }
+  });
+
+  $("#presentation").on("change", function() {
+    const fileInput = $(this);
+    const fileName = fileInput[0].files[0].name;
+    const fileDisplay = fileInput.next(".file");
+    const fileNameSpan = fileDisplay.find("span");
+    const cancelIcon = fileDisplay.find("i");
+
+    if (fileName) {
+      fileNameSpan.text(fileName);
+      fileDisplay.show();
+    } else {
+      fileDisplay.hide();
+    }
+
+    cancelIcon.on("click", function() {
+      fileInput.val(null);
+      fileNameSpan.text("");
+      fileDisplay.hide();
+    });
+  });
 });
 
 $('#addNewStudent')

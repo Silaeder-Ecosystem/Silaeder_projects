@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, make_response, flash
+from flask import Flask, request, render_template, redirect, make_response, flash, abort
 import db as db
 import jwt
 import json
@@ -7,6 +7,7 @@ from flask_mail import Message, Mail
 import re
 from werkzeug.utils import secure_filename
 import os
+import hashlib
 
 app = Flask(__name__)
 
@@ -32,6 +33,9 @@ mail_sender = Mail(app)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def allowed_press(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == "pdf"
 
 def send_email(to, subject, template):
     msg = Message(
@@ -79,14 +83,19 @@ def login():
         login = request.form["email"]
         password = request.form["password"]
 
-        if db.get_is_user_logged_in(login, password):
+        if db.get_is_user_logged_in(login, hashlib.sha256(password.encode('utf-8')).hexdigest()) and db.check_auth_user(login):
             token = jwt.encode(payload={"name": login}, key=parse_data("secret_key"))
             resp = make_response(redirect("/"))
             resp.set_cookie("jwt", token)
+            flash(['success', 'Вы успешно вошли'])
             return resp
         else:
-            flash(['error', 'Wrong login or password'])
-            return redirect("/login", code=302)
+            if not db.check_auth_user(login):
+                flash(['error', 'Ваш аккаунт не подтвержден. Пожалуйста, проверьте вашу почту'])
+                return redirect("/login", code=302)
+            else:
+                flash(['error', 'Неправильный логин или пароль'])
+                return redirect("/login", code=302)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -106,52 +115,52 @@ def register():
             elif (i.islower()):
                 hasLowerCase = True
             elif (i == ' '):
-                flash(['error', 'Spaces are not allowed in'])
+                flash(['error', 'Пробелы не допускаются в пароле'])
             else:
                 hasSpecialCharecters = True 
 
         if not hasDigits:
-            flash(['error', "Password must contain at least one digit"])
+            flash(['error', "Пароль должен содержать хотя бы одну цифру"])
             return redirect('/register')
         
         if not hasUpperCase:
-            flash(['error', "Password must contain at least one uppercase letter"])
+            flash(['error', "Пароль должен содержать хотя бы одну заглавную букву"])
             return redirect('/register')
         
         if not hasLowerCase:
-            flash(['error', "Password must contain at least one lowercase letter"])
+            flash(['error', "Пароль должен содержать хотя бы одну строчную букву"])
             return redirect('/register')
         
         if not hasSpecialCharecters:
-            flash(['error', "Password must contain at least one special character"])
+            flash(['error', "Пароль должен содержать хотя бы один специальный символ"])
             return redirect('/register') 
         if not re.match(r"[^@]+@[^@]+\.[^@]+", form["email"]):
-            flash(['error','You write incorrect email'])
+            flash(['error','Вы ввели неправильную почту'])
             return redirect("/register", code=302)
         app.logger.debug(parse.parse_csv())
         try:
             if parse.parse_csv().index(form["email"]) == -1:
-                flash(['error','This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)'])
+                flash(['error','Это не почта не из Силаэдра. Проверьте его в таблице Силаэдра или спросите администратора (@ilyastarcek)'])
                 return redirect("/register", code=302)
         except:
-            flash(['error','This is not silaeder email. Check it in Silaeder google sheet or ask administrator (@ilyastarcek)'])
+            flash(['error','Это не silaeder email. Проверьте его в таблице Силаэдра или спросите администратора (@ilyastarcek)'])
             return redirect("/register", code=302)
         try:
-            if db.create_user(form['username'], form["email"], form['password'], form['name'], form['surname']) == False:
-                flash(['error','This username or email already exists'])
+            if db.create_user(form['username'], form["email"], hashlib.sha256(form['password'].encode('utf-8')).hexdigest(), form['name'], form['surname']) == False:
+                flash(['error','Этот никнейм или почта уже существует'])
                 return redirect("/register", code=302)
         except:
-            flash(['error', 'This username or email already exists'])
+            flash(['error', 'Этот никнейм или почта уже существует'])
             return redirect("/register", code=302)
         
         resp = make_response(redirect("/projects", code=302))
-        flash(['success','A confirmation email has been sent via email'])
+        flash(['success','Подтверждающее письмо было отправлено на ваш email'])
         
 
         etoken = generate_confirmation_token(form["username"])
         confirm_url = f'http://{parse_data("host")}/confirm/{etoken}'
         html = render_template('mail.html', confirm_url=confirm_url)
-        subject = "Please confirm your email"
+        subject = "Пожалуйста, подтвердите ваш email"
         send_email(form['email'], subject, html)
 
         return resp
@@ -164,19 +173,19 @@ def confirm_email(token):
         username = confirm_token(token)
         print(username)
     except:
-        flash(['error','The confirmation link is invalid. Check your email'])
+        flash(['error','Ссылка подтверждения недействительна. Проверьте вашу почту'])
         return redirect('/', code=302)
     if db.check_not_auth_user_is_exist(username) == []:
-        flash(['error','This is link for not registered account'])
+        flash(['error','Это ссылка для не зарегистрированного аккаунта'])
         return redirect('/registration', code=302)
     token = jwt.encode(payload={"name": username}, key=parse_data("secret_key"))
     if db.check_auth_user(username):
         print(db.check_auth_user(username))
-        flash(['error','Account already confirmed . Please login'])
+        flash(['error','Аккаунт уже подтвержден. Пожалуйста, войдите'])
         return redirect('/login', code=302)
     else:
         db.auth_user(username)
-        flash(['success','You have confirmed your account. Thanks!'])
+        flash(['success','Вы подтвердили свой аккаунт. Спасибо!'])
         resp = make_response(redirect("/", code=302))
         resp.set_cookie("jwt", token)
         return resp
@@ -193,12 +202,12 @@ def new_projects():
         if (confirm_token(request.cookies.get("jwt")) != False):
             return render_template("create.html", user = confirm_token(request.cookies.get("jwt")))
         else:
-            flash(['error', "You are not logged in"])
+            flash(['error', "Вы не вошли"])
             return redirect('/login') 
     else:
         token = confirm_token(request.cookies.get("jwt"))
         if not token:
-            flash(['error', "You are not logged in"])
+            flash(['error', "Вы не вошли"])
             return redirect('/login') 
         form = request.form
         print()
@@ -208,43 +217,59 @@ def new_projects():
         app.logger.debug(request.form.getlist('team[]'))
         print()
         print()
+        translate = {'title': 'название', 'description': 'описание', 'teacher': 'учитель', 'topic': 'секция', 'short-description': 'краткое описание', 'leader': 'лидер'}
         for i in ['title', 'description', 'teacher', 'topic', 'short-description', 'leader']:
             if form[i] == '':
-                flash(['error', f"You don't fill {i} field"])
+                flash(['error', f"Вы не заполнили поле {translate[i]}"])
                 return redirect("/projects/new", code=302)
         for i in request.form.getlist('team[]'):
             print(i)
             if not db.check_user_is_exist(i):
-                flash(['error', f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+                flash(['error', f"Пользователь {i} не завершил регистрацию или не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
                 return redirect("/projects/new", code=302)
         if not db.check_user_is_exist(form['teacher']):
-            flash(['error',f"Teacher isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+            flash(['error',f"Учитель не завершил регистрацию или его аккаунта не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
             return redirect(f'/projects/new', code=302)
-        if 'cover' not in request.files:
-            flash(['error','No file loaded'])
-            return redirect(f"/projects/new")
         file = request.files['cover']
-        if file.filename == '':
-            flash(['error', 'No selected file'])
+        file2 = request.files['presentation']
+        if form['topic'] not in ['Математика', 'Информатика', 'Машинное обучение', 'Физика', 'Инфобез', 'Экономика', 'Биология', 'Экология', 'Медицина', 'Астрономия', 'Химия', 'Игры', 'Литература', 'История', 'Лингвистика', 'Филология', 'Обществознание', 'Английский', 'География', 'Макетирование']:
+            flash(['error', 'Неправильная секция'])
             return redirect(f"/projects/new")
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file_id_name = filename.rsplit('.', 1)
-            #try:
-            #if 1 == 1:
-            proj = db.create_project(form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
-            if proj == False:
-                flash(['error','This project already exists'])
-                return redirect("/projects/new", code=302)
-            #except:
-             #   flash(['error', 'You fill not all fields'])
-              #  return redirect("/projects/new", code=302)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], proj))
-            flash(['success','Project created'])
-            return redirect("/myprojects", code=302)
-        else:
-            flash(['error','Uncorrect file or filename'])
-            return redirect("/myprojects", code=302)
+        if 'cover' not in request.files:
+            flash(['error','Файл не загружен'])
+            return redirect(f"/projects/new")
+        if 'presentation' not in request.files:
+            flash(['error','Презентация не загружена'])
+            return redirect(f"/projects/new")
+        if file.filename == '':
+            flash(['error', 'Обложка не выбрана'])
+            return redirect(f"/projects/new")
+        if file2.filename == '':
+            flash(['error', 'Презентация не выбрана'])
+            return redirect(f"/projects/new")
+        if not allowed_file(file.filename):
+            flash(['error', 'Неправильный файл обложки'])
+            return redirect(f"/projects/new")
+        if not allowed_press(file2.filename):
+            flash(['error', 'Неправильный файл презентации'])
+            return redirect(f"/projects/new")
+        filename = secure_filename(file.filename)
+        filename2 = secure_filename(file2.filename)
+        file_id_name = filename.rsplit('.', 1)
+        file_id_name2 = filename2.rsplit('.', 1)
+        #try:
+        #if 1 == 1:
+        proj = db.create_project(form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  '.' + file_id_name[-1], form['link-interes'], '.' + file_id_name2[-1], form['short-description'], form['teacher'])
+        if proj == False:
+            flash(['error','Этот проект уже существует'])
+            return redirect("/projects/new", code=302)
+        #except:
+            #   flash(['error', 'You fill not all fields'])
+            #  return redirect("/projects/new", code=302)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], proj))
+        file2.save(os.path.join(app.config['UPLOAD_FOLDER'], proj.split('.')[0]+ '.pdf'))
+        flash(['success','Проект создан'])
+        return redirect("/myprojects", code=302)
 
 @app.route('/projects', methods=['GET'])
 def get_projects():
@@ -255,6 +280,8 @@ def get_projects():
 @app.route('/projects/<id>', methods=['GET'])
 def get_project(id):
     ans = db.get_project_by_id(id)
+    if ans == []:
+        abort(404)
     ans = list(ans[0])
     token = confirm_token(request.cookies.get("jwt"))
     if not token:
@@ -269,12 +296,12 @@ def about():
 def edit_project(id):
     if (request.method == 'GET'):
         token = confirm_token(request.cookies.get("jwt"))
-        if not token:
-            flash(['error', "You are not logged in"])
+        if not token :
+            flash(['error', "Вы не вошли"])
             return redirect('/login') 
         if not db.is_user_in_project(id, token):
-            flash(['error', "You are not in this project"])
-            return redirect('/login') 
+            flash(['error', "Вы не состоите в этом проекте"])
+            return redirect('/projects/'+str(id)) 
         ans = db.get_project_by_id(id)
         ans = list(ans[0])
         print(ans)
@@ -282,11 +309,11 @@ def edit_project(id):
     else:
         token = confirm_token(request.cookies.get("jwt"))
         if not token:
-            flash(['error', "You are not logged in"])
+            flash(['error', "Вы не вошли"])
             return redirect('/login') 
         if not db.is_user_in_project(id, token):
-            flash(['error', "You are not in this project"])
-            return redirect('/login') 
+            flash(['error', "Вы не состоите в этом проекте"])
+            return redirect('/projects/'+str(id)) 
         form = request.form
         print()
         print()
@@ -294,49 +321,64 @@ def edit_project(id):
         app.logger.debug(request.form)
         print()
         print()
+        translate = {'title': 'название', 'description': 'описание', 'teacher': 'учитель', 'topic': 'секция', 'short-description': 'краткое описание', 'leader': 'лидер'}
         for i in ['title', 'description', 'teacher', 'topic', 'short-description', 'leader']:
             if form[i] == '':
-                flash(['error',f"You don't fill {i} field"])
+                flash(['error',f"Вы не заполнили поле {translate[i]}"])
                 return redirect("/projects/new", code=302)
 
         if request.form.getlist('team[]') == []:
-            flash(['error', 'Nobody in project. Please add peoples to the project'])
+            flash(['error', 'Никого нет в проекте. Пожалуйста, добавьте людей в проект'])
             return redirect('/projects/'+str(id)+'/edit')
-
+        if form['topic'] not in ['Математика', 'Информатика', 'Машинное обучение', 'Физика', 'Инфобез', 'Экономика', 'Биология', 'Экология', 'Медицина', 'Астрономия', 'Химия', 'Игры', 'Литература', 'История', 'Лингвистика', 'Филология', 'Обществознание', 'Английский', 'География', 'Макетирование']:
+            flash(['error', 'Неправильная секция'])
+            return redirect(f"/projects/{id}/edit")
         for i in request.form.getlist('team[]'):
             print(i)
             if not db.check_user_is_exist(i):
-                flash(['error',f"User {i} isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+                flash(['error',f"Пользователь {i} не завершил регистрацию или не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
                 return redirect(f'/projects/{id}/edit', code=302)
         if not db.check_user_is_exist(form['teacher']):
-            flash(['error',f"Teacher isn't finish registration or isn't exist. Please check him(her) username or ask him(her) finish registration"])
+            flash(['error',f"Учитель не завершил регистрацию или его аккаунта не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
             return redirect(f'/projects/{id}/edit', code=302)
         if 'cover' not in request.files:
-            flash(['error','No file loaded'])
+            flash(['error','Файл не загружен'])
+            return redirect(f"/projects/{id}/edit")
+        if 'presentation' not in request.files:
+            flash(['error','Презентация не загружена'])
             return redirect(f"/projects/{id}/edit")
         file = request.files['cover']
-        if file.filename == '':
-            filename = db.get_covername_of_project(id)
-            db.update_project(id, form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"], filename, form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
-            flash(['success',"Project edited"])
-            return redirect('/myprojects')
-        if file and allowed_file(file.filename):
+        file2 = request.files['presentation']
+        if file.filename != '' and not allowed_file(file.filename):
+            flash(['error', 'Неправильный файл обложки'])
+            return redirect(f"/projects/{id}/edit")
+        if file2.filename != '' and not allowed_press(file2.filename):
+            flash(['error', 'Неправильный файл презентации'])
+            return redirect(f"/projects/{id}/edit")
+        if file.filename != '':
             filename = secure_filename(file.filename)
             file_id_name = filename.rsplit('.', 1)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.' + file_id_name[1]))
-            db.update_project(id, form['name'], form['description'], form['teacher'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  str(id) + '.' + file_id_name[1], form['link-interes'], form['link-pres'], form['short-description'], form['teacher'])
-            flash(['success',"Project edited"])
-            return redirect('/myprojects')
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.' + file_id_name[-1]))
+        else:
+            filename = db.get_covername_of_project(id)
+        if file2.filename != '':
+            filename2 = '.'+secure_filename(file2.filename)
+            file2.save(os.path.join(app.config['UPLOAD_FOLDER'], str(id) + '.pdf'))
+        else:
+            filename2 = db.get_presentation_of_project(id)
+        db.update_project(id, form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"], filename, form['link-interes'], filename2, form['short-description'], form['teacher'])
+        flash(['success',"Проект отредактирован"])
+        return redirect('/myprojects')
 
 @app.route('/myprojects', methods=['GET'])
 def get_my_projects():
     token = confirm_token(request.cookies.get("jwt"))
     if not token:
-        flash(['error', "You are not logged in"])
+        flash(['error', "Вы не вошли"])
         return redirect('/login') 
     ans = db.get_projects_by_username(token)
     print(ans)
-    return render_template("projects.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + token)
+    return render_template("projects.html", projects = ans, user = request.cookies.get("jwt"), title = "Проекты от " + token)
 
 @app.route('/search/', methods=['GET', 'POST'])
 def search_main():
@@ -344,13 +386,12 @@ def search_main():
         return render_template('home.html')
     else:
         form = request.form
-        return redirect(f'/search/{form["search"]}/')
-
-@app.route('/search/<inp>/', methods=['GET'])
-def search(inp):
-    ans = db.search_for_projects(inp)
-    return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), inp = inp)
-
+        app.logger.debug(form)
+        if form['topic'] not in ['Математика', 'Информатика', 'Машинное обучение', 'Физика', 'Инфобез', 'Экономика', 'Биология', 'Экология', 'Медицина', 'Астрономия', 'Химия', 'Обществознание', 'Английский', 'География', 'Макетирование', 'Лингвистика', 'Филология', 'История', 'Литература', 'Игры', '']:
+            flash(['error', 'Неправильная секция'])
+            return redirect('/projects')
+        return render_template('home.html', projects = db.search_for_projects(form['search'], form['topic']), user = request.cookies.get("jwt"), title = "Поиск проектов", query = form['search'], topic = form['topic'], search = True)
+       
 @app.route('/projects/<id>/delete')
 def delete_project(id):
     if (db.delete_project(id)):
@@ -364,7 +405,7 @@ def delete_project(id):
 
 @app.route('/user/<username>')
 def user(username):
-    return "Nothing here (in deploment)"
+    return "Здесь ничего нет (в разработке)"
     ans = db.get_projects_by_username(username)
     ans2 = db.get_user_by_username(username)
     print(ans)
@@ -374,20 +415,20 @@ def user(username):
 def settings():
     token = confirm_token(request.cookies.get("jwt"))
     if not token:
-        flash(['error', "You are not logged in"])
+        flash(['error', "Вы не вошли"])
         return redirect('/login') 
     if request.method == 'GET':
         return render_template('settings.html')
     else:
         form = request.form
         if form['name'] == '':
-            flash(['error', 'Nickname is not filled'])
+            flash(['error', 'Имя не заполнено'])
             return redirect('/settings')
         if form['password'] == '':
-            flash(['error', 'Password is not filled'])
+            flash(['error', 'Пароль не заполнен'])
             return redirect('/settings')
         if form['password2'] == '':
-            flash(['error', 'Second password is not filled'])
+            flash(['error', 'Второй пароль не заполнен'])
             return redirect('/settings')
         hasDigits, hasUpperCase, hasLowerCase, hasSpecialCharecters, hasSpases = False, False, False, False, True
 
@@ -399,34 +440,42 @@ def settings():
             elif (i.islower()):
                 hasLowerCase = True
             elif (i == ' '):
-                flash(['error', 'Spaces are not allowed in'])
+                flash(['error', 'Пробелы не допускаются в'])
             else:
                 hasSpecialCharecters = True 
 
         if not hasDigits:
-            flash(['error', "Password must contain at least one digit"])
+            flash(['error', "Пароль должен содержать хотя бы одну цифру"])
             return redirect('/register')
         
         if not hasUpperCase:
-            flash(['error', "Password must contain at least one uppercase letter"])
+            flash(['error', "Пароль должен содержать хотя бы одну заглавную букву"])
             return redirect('/register')
         
         if not hasLowerCase:
-            flash(['error', "Password must contain at least one lowercase letter"])
+            flash(['error', "Пароль должен содержать хотя бы одну строчную букву"])
             return redirect('/register')
         
         if not hasSpecialCharecters:
-            flash(['error', "Password must contain at least one special character"])
+            flash(['error', "Пароль должен содержать хотя бы один специальный символ"])
             return redirect('/register') 
 
         if form['password'] != form['password2']:
-            flash(['error', "Passwords must match"])
+            flash(['error', "Пароли должны совпадать"])
             return redirect('/register') 
         
         if not db.update_user_data(token, form['name'], form['password']):
-            return 'ERROR: settings'
-        flash('User setting updated successfuly')
+            return 'ОШИБКА: настройки'
+        flash('Настройки пользователя успешно обновлены')
         return redirect('/projects')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html', user=confirm_token(request.cookies.get('jwt'))), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html', user=confirm_token(request.cookies.get('jwt'))), 500
 
 if __name__ == "__main__":
     #db.delete_all()

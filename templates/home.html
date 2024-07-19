@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en ru">
+<html lang="ru">
   <head>
     <meta charset="UTF-8">
-    <title>Home | Silaeder Projects</title>
+    <title>Главная | Проекты Силаэдра</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
@@ -12,33 +12,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sadText.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
   </head>
   <body>
     <nav class="navbar" style="z-index: 1;">
       <ul class="navbar__menu"> 
         <li class="navbar__item">
-          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Home</span></a>
+          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Главная</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Search</span></a>
+          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Поиск</span></a>
         </li>
         <li class="navbar__item">
-          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Projects</span></a>        
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Проекты</span></a>        
         </li>
         <li class="navbar__item">
-          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>About</span></a>        
+          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>О нас</span></a>        
         </li>
         {% if user %}
           <li class="navbar__item">
-            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Settings</span></a>        
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Настройки</span></a>        
           </li>
           <li class="navbar__item">
-            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Sign&nbsp;Out</span></a>        
+            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Выйти</span></a>        
           </li>
         {% else %}
           <li class="navbar__item">
-            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Sign&nbsp;In</span></a>        
+            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Войти</span></a>        
           </li>
         {% endif %}
       </ul>
@@ -53,23 +54,145 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
-    <form class="search__form" action="/search" method="POST">
-      <input type="text" name="search"placeholder="Search.." onkeydown="pressed(event)" autocomplete="off"/>
+    <form class="search__form" action="/search/" method="POST">
+      <div class="flex justify-center space-x-7">
+      <input type="text" name="search" placeholder="Введите название" autocomplete="off" class="mb-4 cool_search"/>
+    <label for="topic" class="text__label mb-4">
+      <p>Секция:</p>
+      <select name="topic" id="topic" class="mb-4 cool_button">
+        {% if not topic  %}
+          <option selected value="">Все секции</option>
+        {% else %}
+          <option value="">Все секции</option>
+        {% endif %}
+        {% if topic == 'Математика' %}
+          <option value="Математика" selected>Математика</option>
+        {% else %}
+          <option value="Математика">Математика</option>
+        {% endif %}
+        {% if topic == 'Информатика' %}
+          <option value="Информатика" selected>Информатика</option>
+        {% else %}
+          <option value="Информатика">Информатика</option>
+        {% endif %}
+        {% if topic == 'Машинное обучение' %}
+          <option value="Машинное обучение" selected>Машинное обучение</option>
+        {% else %}
+          <option value="Машинное обучение">Машинное обучение</option>
+        {% endif %}
+        {% if topic == 'Физика' %}
+          <option value="Физика" selected>Физика</option>
+        {% else %}
+          <option value="Физика">Физика</option>
+        {% endif %}
+        {% if topic == 'Инфобез' %}
+          <option value="Инфобез" selected>Инфобез</option>
+        {% else %}
+          <option value="Инфобез">Инфобез</option>
+        {% endif %}
+        {% if topic == 'Экономика' %}
+          <option value="Экономика" selected>Экономика</option>
+        {% else %}
+          <option value="Экономика">Экономика</option>
+        {% endif %}
+        {% if topic == 'Биология' %}
+          <option value="Биология" selected>Биология</option>
+        {% else %}
+          <option value="Биология">Биология</option>
+        {% endif %}
+        {% if topic == 'Экология' %}
+          <option value="Экология" selected>Экология</option>
+        {% else %}
+          <option value="Экология">Экология</option>
+        {% endif %}
+        {% if topic == 'Медицина' %}
+          <option value="Медицина" selected>Медицина</option>
+        {% else %}
+          <option value="Медицина">Медицина</option>
+        {% endif %}
+        {% if topic == 'Астрономия' %}
+          <option value="Астрономия" selected>Астрономия</option>
+        {% else %}
+          <option value="Астрономия">Астрономия</option>
+        {% endif %}
+        {% if topic == 'Химия' %}
+          <option value="Химия" selected>Химия</option>
+        {% else %}
+          <option value="Химия">Химия</option>
+        {% endif %}
+        {% if topic == 'Игры' %}
+          <option value="Игры" selected>Игры</option>
+        {% else %}
+          <option value="Игры">Игры</option>
+        {% endif %}
+        {% if topic == 'Литература' %}
+          <option value="Литература" selected>Литература</option>
+        {% else %}
+          <option value="Литература">Литература</option>
+        {% endif %}
+        {% if topic == 'История' %}
+          <option value="История" selected>История</option>
+        {% else %}
+          <option value="История">История</option>
+        {% endif %}
+        {% if topic == 'Лингвистика' %}
+          <option value="Лингвистика" selected>Лингвистика</option>
+        {% else %}
+          <option value="Лингвистика">Лингвистика</option>
+        {% endif %}
+        {% if topic == 'Филология' %}
+          <option value="Филология" selected>Филология</option>
+        {% else %}
+          <option value="Филология">Филология</option>
+        {% endif %}
+        {% if topic == 'Обществознание' %}
+          <option value="Обществознание" selected>Обществознание</option>
+        {% else %}
+          <option value="Обществознание">Обществознание</option>
+        {% endif %}
+        {% if topic == 'Английский' %}
+          <option value="Английский" selected>Английский</option>
+        {% else %}
+          <option value="Английский">Английский</option>
+        {% endif %}
+        {% if topic == 'География' %}
+          <option value="География" selected>География</option>
+        {% else %}
+          <option value="География">География</option>
+        {% endif %}
+        {% if topic == 'Макетирование' %}
+          <option value="Макетирование" selected>Макетирование</option>
+        {% else %}
+          <option value="Макетирование">Макетирование</option>
+        {% endif %}
+        </select>
+      </label>
+      <button type="submit" class="search__button mb-4 cool_submit">Поиск</button>
+    </div>
     </form>
+    {% if search %}
+      <div class="flex justify-center items-center">
+        {% if topic == '' %}
+          <span>Поиск по запросу: {{query}}</span>
+        {% else %}
+          <span>Поиск по запросу: {{query}} в секции: {{topic}}</span>
+        {% endif %}
+      </div>
+    {% endif %}
     {% if projects|length == 0 %}
       <div class="sad">
-        <span>Nothing here</span>
+        <span>Ничего нет</span>
       </div>
     {% else %}
       <div class="cards__list">
         {% for i in projects %}
           <a href="/projects/{{i[-2]}}">
             <div class="card">
-              <div class="card__image"> 
+              <div class="card__image" style="display: block;"> 
                 <img src="/static/{{i[-2]}}{{i[-1]}}"/> 
-              </div>
-              <div class="card__title title__black">
-                <p>{{i[0]}}</p>
+                <div class="card__title title__black">
+                  <p>{{i[0]}}</p>
+                </div>
               </div>
             </div>
           </a>
