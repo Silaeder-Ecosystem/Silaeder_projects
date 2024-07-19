@@ -277,7 +277,7 @@ def get_projects():
     print(ans)
     return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Silaeder Projects")
 
-@app.route('/projects/<id>', methods=['GET'])
+@app.route('/projects/<int:id>', methods=['GET'])
 def get_project(id):
     ans = db.get_project_by_id(id)
     if ans == []:
@@ -292,7 +292,7 @@ def get_project(id):
 def about():
     return render_template('about.html', user=confirm_token(request.cookies.get('jwt')))
 
-@app.route('/projects/<id>/edit', methods=['GET', 'POST'])
+@app.route('/projects/<int:id>/edit', methods=['GET', 'POST'])
 def edit_project(id):
     if (request.method == 'GET'):
         token = confirm_token(request.cookies.get("jwt"))
@@ -392,7 +392,7 @@ def search_main():
             return redirect('/projects')
         return render_template('home.html', projects = db.search_for_projects(form['search'], form['topic']), user = request.cookies.get("jwt"), title = "Поиск проектов", query = form['search'], topic = form['topic'], search = True)
        
-@app.route('/projects/<id>/delete')
+@app.route('/projects/<int:id>/delete')
 def delete_project(id):
     if (db.delete_project(id)):
         for i in ALLOWED_EXTENSIONS:
