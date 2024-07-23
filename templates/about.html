@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <title>О нас | Проекты Силаэдра</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar" style="z-index: 1;">
+      <ul class="navbar__menu"> 
+        <li class="navbar__item">
+          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Главная</span></a>
+        </li>
+        <li class="navbar__item">
+          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Поиск</span></a>
+        </li>
+        <li class="navbar__item">
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Проекты</span></a>        
+        </li>
+        <li class="navbar__item">
+          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>О нас</span></a>        
+        </li>
+        {% if user %}
+          <li class="navbar__item">
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Настройки</span></a>        
+          </li>
+          <li class="navbar__item">
+            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Выйти</span></a>        
+          </li>
+        {% else %}
+          <li class="navbar__item">
+            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Войти</span></a>        
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div class="about">
+			<span class="title"><img src="{{ url_for('static', filename='image/logo.jpg') }}"><p>Проекты Силаэдра</p></span>
+			<span class="description">Витрина проектов школы «Силаедр».</span>
+			<ul>
+				<a href="https://vk.com/silaedr"><li><img style="height: 8vh!important; width: 8vh!important;" src="{{ url_for('static', filename='image/vk.svg') }}"></li></a>
+				<a href="https://t.me/silaeder"><li><img style="margin-right: 8px!important;" src="{{ url_for('static', filename='image/telegram.svg') }}"></li></a>
+				<a href="https://www.youtube.com/@silaeder"><li><img src="{{ url_for('static', filename='image/youtube.svg') }}"></li></a>
+			</ul>
+    </div>
+    <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <script src='https://unpkg.com/feather-icons'></script>
+    <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
+  </body>
+</html>

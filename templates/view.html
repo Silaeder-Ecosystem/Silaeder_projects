@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.15/tailwind.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <title>Просмотр проекта | Проекты Силаэдра</title>
+  </head>
+  <body>
+    <nav class="navbar" style="z-index: 1;">
+      <ul class="navbar__menu"> 
+        <li class="navbar__item">
+          <a href="/" class="navbar__link" state="static"><i data-feather="home"></i><span>Главная</span></a>
+        </li>
+        <li class="navbar__item">
+          <a href="/search" class="navbar__link" state="static"><i data-feather="search"></i><span>Поиск</span></a>
+        </li>
+        <li class="navbar__item">
+          <a href="/myprojects" class="navbar__link" state="static"><i data-feather="folder"></i><span>Проекты</span></a>        
+        </li>
+        <li class="navbar__item">
+          <a href="/about" class="navbar__link" state="static"><i data-feather="help-circle"></i><span>О нас</span></a>        
+        </li>
+        {% if user %}
+          <li class="navbar__item">
+            <a href="/settings" class="navbar__link" state="static"><i data-feather="settings"></i><span>Настройки</span></a>        
+          </li>
+          <li class="navbar__item">
+            <a href="/logout" class="navbar__link" state="logout"><i data-feather="log-out"></i><span>Выйти</span></a>        
+          </li>
+        {% else %}
+          <li class="navbar__item">
+            <a href="/login" class="navbar__link" state="login"><i data-feather="log-in"></i><span>Войти</span></a>        
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div class="notification__box"></div>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
+    <script src="{{ url_for('static', filename='js/alert.js') }}"></script>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <script>sendNotification("{{ message[0] }}", "{{ message[1] }}");</script>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <div class="view__container">
+      <span class="title">
+        <a href="/" class="back">
+          <i data-feather="arrow-left-circle" height="30" width="30"></i>
+        </a>
+        <p style="font-size: 19px;">&nbsp;{{ans[2]}}&nbsp;</p>
+        {% if asset %} 
+          <a href="/projects/{{ans[0]}}/edit" class="back">
+            <i data-feather="edit-2" height="24" width="24"></i>
+          </a>
+        {% endif %}
+      </span>
+      <div class="saver">
+        <img class="cover" src="/static/{{ans[0]}}{{ans[8]}}" alt="cover">
+        <ul class="ttl">
+          <li><span>Тема:</span><span>&nbsp;{{ans[6]}}</span></li>
+          <li><span>Лидер:</span><span>&nbsp;{{ans[7]}}</span></li>
+          <li><span>Учитель:</span><span>&nbsp;{{ans[12]}}</span></li>
+          <li>
+            <span style="color: #3d3c3c;">Команда:</span>
+            <ul class="team">
+              {% for i in ans[1] %}
+                <li>{{i}}</li>
+              {% endfor %}
+            </ul> 
+          </li>
+        </ul>
+      </div>
+      <div class="dtl">
+        <span class="description">
+          {{ans[3]}}
+        </span>
+        
+        <ul style="margin-top: 2px;">
+          <li><span style="color: #333;">Краткое описание:</span>&nbsp;{{ans[11]}}</li>
+          {% if ans[4] != '' %}
+            <li><span style="color: #333;">Изображения:</span>&nbsp;{{ans[4]}}</li>
+          {% endif %}
+          {% if ans[10] != '' %}
+            <li><span style="color: #333;">Презентация:</span>&nbsp;<a style="color: blue;" href="/static/{{ans[0]}}{{ans[10]}}" target="_blank">{{ans[0]}}{{ans[10]}}</a></li>
+          {% endif %}
+          {% if ans[5] != '' %}
+            <li><span style="color: #333;">Видео:</span>&nbsp;{{ans[5]}}</li>
+          {% endif %}
+          {% if ans[9] != '' %}
+          <li><span style="color: #333;">Полезные ссылки:</span>&nbsp;{{ans[9]}}</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
+  </body>
+</html>

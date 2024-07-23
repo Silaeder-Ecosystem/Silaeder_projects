@@ -1,0 +1,17 @@
+.form__requirements {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form__requirements li {
+  margin: 5px 0;
+}
+
+.form__requirements .valid {
+  color: green;
+}
+
+.form__requirements .invalid {
+  color: red;
+}
