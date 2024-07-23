@@ -51,7 +51,6 @@ $(document).ready(function() {
 });
 
 $('#addNewStudent')
-
 .click(function() {
   $(this).html("").attr('contenteditable', 'true');
 })
@@ -59,10 +58,16 @@ $('#addNewStudent')
 .keyup(function(e) {
   if (e.keyCode === 13) {
     var val = $(this).text();
-    $(this)
-      .before(`<li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="${val}">${val}</li>`)
-      .html(`<img src="/static/image/plus.svg">`)
-      .attr('contenteditable', 'false');
+    if (/[^a-zA-Z0-9_]/.test(val)) {
+      val = '';
+    }
+    if (val !== '') {
+      $(this)
+        .before(`<li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="${val}">${val}</li>`)
+    }
+    $(this).html(`<img src="/static/image/plus.svg">`)
+    $(this).attr('contenteditable', 'false');
+
     e.preventDefault();
   }
 });

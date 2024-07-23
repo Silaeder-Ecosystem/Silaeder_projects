@@ -73,7 +73,7 @@
           <p><span style="color: red;">*</span>Команда:</p>
           <ul>
             {% for i in ans[1] %}
-            <li id="student" name="student" onclick="this.remove()"><input name="team[]" style="display: none;" value="{{i}}">{{i}}</li>
+            <li id="student" name="student"><input name="team[]" style="display: none;" value="{{i}}">{{i}}</li>
             {% endfor %}
             <li id="addNewStudent" name="student" class="menu-item-divided"><img height="22" width="22" src="{{ url_for('static', filename='image/plus.svg') }}"></li>
           </ul> 

@@ -106,6 +106,10 @@ def register():
         form = request.form.to_dict()
         form['email'] = form['email'].lower()
         hasDigits, hasUpperCase, hasLowerCase, hasSpecialCharecters, hasSpases = False, False, False, False, True
+        for i in form['username']:
+            if i not in 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890_':
+                flash(['error', 'Никнейм содержит недопустимые символы'])
+                return redirect('/register')
 
         for i in form['password']:
             if (i.isdigit()):
