@@ -28,14 +28,6 @@ def get_user_by_username(username):
     conn.commit()
     return cursor.fetchall()
 
-
-def get_user_by_id(id):
-    sqlite_select_query = 'SELECT username, name, surname FROM users WHERE id = %s AND auth = true;'
-    cursor.execute(sqlite_select_query, id)
-    conn.commit()
-    return cursor.fetchall()
-
-
 def create_user(username, email, password, name, surname):
     sqlite3_insert_query = 'INSERT INTO users (username, email, password, name, surname, auth) VALUES (%s, %s, %s, %s, %s, false);'
     cursor.execute(sqlite3_insert_query, (username, email, password, name, surname))
@@ -127,20 +119,6 @@ def update_project(id, title, descrip, teamlead, autor_usernames, video_link, di
 def get_all_usernames():
     sqlite3_select_query = 'SELECT username FROM users;'
     cursor.execute(sqlite3_select_query)
-    conn.commit()
-    return cursor.fetchall()
-
-
-def get_user_id_by_username(username):
-    sqlite3_select_query = 'SELECT id FROM users WHERE username =%s;'
-    cursor.execute(sqlite3_select_query, (username,))
-    conn.commit()
-    return cursor.fetchall()
-
-
-def get_projects_by_username(username):
-    query = 'SELECT title, teamlead, topic, id, main_pic_path, autor_usernames, teacher FROM projects WHERE %s = ANY(autor_usernames);'
-    cursor.execute(query, (username,))
     conn.commit()
     return cursor.fetchall()
 
