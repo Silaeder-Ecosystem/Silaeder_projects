@@ -1,13 +1,18 @@
-from flask import Flask, request, render_template, redirect, make_response, flash, abort
+# ЭТО ВЕРСИЯ С AUTH0  
+
+from flask import Flask, request, render_template, redirect, make_response, flash, abort, url_for
 import db as db
 import jwt
 import json
-import parse
+#import parse 
 from flask_mail import Message, Mail
-import re
+#import re
 from werkzeug.utils import secure_filename
 import os
-import hashlib
+#import hashlib
+from authlib.integrations.flask_client import OAuth
+import authlib
+import auth0
 
 app = Flask(__name__)
 
@@ -27,9 +32,21 @@ app.config['MAIL_DEFAULT_SENDER'] = parse_data('mail')
 app.config['MAIL_PASSWORD'] = parse_data("mail_password")
 app.config['UPLOAD_FOLDER'] = './static/'
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
 
 mail_sender = Mail(app)
+
+oauth = OAuth(app)
+
+oauth.register(
+    "auth0",
+    client_id=parse_data("AUTH0_CLIENT_ID"),
+    client_secret=parse_data("AUTH0_CLIENT_SECRET"),
+    client_kwargs={
+        "scope": "openid profile email",
+    },
+    server_metadata_url=f'https://{parse_data("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -37,22 +54,22 @@ def allowed_file(filename):
 def allowed_press(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == "pdf"
 
-def send_email(to, subject, template):
+'''def send_email(to, subject, template):
     msg = Message(
         subject,
         recipients=[to],
         html=template,
         sender=parse_data('mail')
     )
-    mail_sender.send(msg)
+    mail_sender.send(msg)'''
 
-def generate_confirmation_token(email):
-    return jwt.encode(payload={"name": email}, key=parse_data("secret_key"))
+#def generate_confirmation_token(email):
+#    return jwt.encode(payload={"name": email}, key=parse_data("secret_key"))
 
 
 def confirm_token(token):
     try:
-    	return jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")["name"]
+        return jwt.decode(token, key=parse_data("secret_key"), algorithms="HS256")["name"]
     except:
     	return False
 
@@ -76,7 +93,7 @@ def main():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
+    '''if request.method == "GET":
         return render_template("login.html")
     
     else:
@@ -95,12 +112,15 @@ def login():
                 return redirect("/login", code=302)
             else:
                 flash(['error', 'Неправильный логин или пароль'])
-                return redirect("/login", code=302)
+                return redirect("/login", code=302)'''
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if (request.method == "GET"):
+    '''if (request.method == "GET"):
         return render_template("register.html")
     else:
         form = request.form.to_dict()
@@ -167,10 +187,30 @@ def register():
         subject = "Пожалуйста, подтвердите ваш email"
         send_email(form['email'], subject, html)
 
-        return resp
-        
+        return resp'''
+    return oauth.auth0.authorize_redirect(
+        redirect_uri=url_for("callback", _external=True)
+    )
 
-@app.route('/confirm/<token>', methods=['GET'])
+@app.route("/callback", methods=["GET", "POST"])
+def callback():
+    try:
+        token = oauth.auth0.authorize_access_token()
+        app.logger.debug(token)
+    except authlib.integrations.base_client.errors.OAuthError as e:
+        if "Please verify your email before continuing" in str(e):
+            flash(['error', "Please verify your email before continuing"])
+            return redirect('/')
+        else:
+            return str(e)
+    app.logger.debug(token)
+    token2 = jwt.encode(payload={"name": token['userinfo']['nickname']}, key=parse_data("secret_key"))
+    resp = make_response(redirect("/projects"))
+    flash(['success', 'Вы успешно вошли'])
+    resp.set_cookie("jwt", token2)
+    return resp
+
+'''@app.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
     print(token)
     try:
@@ -192,7 +232,7 @@ def confirm_email(token):
         flash(['success','Вы подтвердили свой аккаунт. Спасибо!'])
         resp = make_response(redirect("/", code=302))
         resp.set_cookie("jwt", token)
-        return resp
+        return resp'''
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -216,7 +256,7 @@ def new_projects():
         form = request.form
         print()
         print()
-        app.logger.debug(request.files)
+        app.logger.debug(token)
         app.logger.debug(request.form)
         app.logger.debug(request.form.getlist('team[]'))
         print()
@@ -226,13 +266,18 @@ def new_projects():
             if form[i] == '':
                 flash(['error', f"Вы не заполнили поле {translate[i]}"])
                 return redirect("/projects/new", code=302)
+        if form.getlist('team[]') == []:
+            flash(['error', 'Никого нет в проекте. Пожалуйста, добавьте людей в проект'])
+            return redirect("/projects/new", code=302)
+        if token not in form.getlist('team[]'):
+            form.getlist('team[]').append(token)
         for i in request.form.getlist('team[]'):
             print(i)
-            if not db.check_user_is_exist(i):
-                flash(['error', f"Пользователь {i} не завершил регистрацию или не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
+            if not auth0.check_user_is_exist(i):
+                flash(['error', f"Пользователь {i} не найден. Пожалуйста, проверьте его имя пользователя "])
                 return redirect("/projects/new", code=302)
-        if not db.check_user_is_exist(form['teacher']):
-            flash(['error',f"Учитель не завершил регистрацию или его аккаунта не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
+        if not auth0.check_user_is_exist(form['teacher']):
+            flash(['error',f"Аккаунт учителя не найден. Пожалуйста, проверьте его имя пользователя"])
             return redirect(f'/projects/new', code=302)
         file = request.files['cover']
         file2 = request.files['presentation']
@@ -265,7 +310,7 @@ def new_projects():
         #if 1 == 1:
         proj = db.create_project(form['title'], form['description'], form['leader'], form.getlist('team[]'), form['link-video'], form['link-images'], form["topic"],  '.' + file_id_name[-1], form['link-interes'], '.' + file_id_name2[-1], form['short-description'], form['teacher'])
         if proj == False:
-            flash(['error','Этот проект уже существует'])
+            flash(['error','Ошибка базы данных. Пожалуйста, свяжитесь с @ilyastarcek'])
             return redirect("/projects/new", code=302)
         #except:
             #   flash(['error', 'You fill not all fields'])
@@ -334,16 +379,18 @@ def edit_project(id):
         if request.form.getlist('team[]') == []:
             flash(['error', 'Никого нет в проекте. Пожалуйста, добавьте людей в проект'])
             return redirect('/projects/'+str(id)+'/edit')
+        if token not in form.getlist('team[]'):
+            form.getlist('team[]').append(token)
         if form['topic'] not in ['Математика', 'Информатика', 'Машинное обучение', 'Физика', 'Инфобез', 'Экономика', 'Биология', 'Экология', 'Медицина', 'Астрономия', 'Химия', 'Игры', 'Литература', 'История', 'Лингвистика', 'Филология', 'Обществознание', 'Английский', 'География', 'Макетирование']:
             flash(['error', 'Неправильная секция'])
             return redirect(f"/projects/{id}/edit")
         for i in request.form.getlist('team[]'):
             print(i)
-            if not db.check_user_is_exist(i):
-                flash(['error',f"Пользователь {i} не завершил регистрацию или не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
+            if not auth0.check_user_is_exist(i):
+                flash(['error',f"Пользователь {i} не найден. Пожалуйста, проверьте его имя пользователя"])
                 return redirect(f'/projects/{id}/edit', code=302)
-        if not db.check_user_is_exist(form['teacher']):
-            flash(['error',f"Учитель не завершил регистрацию или его аккаунта не существует. Пожалуйста, проверьте его имя пользователя или попросите его завершить регистрацию"])
+        if not auth0.check_user_is_exist(form['teacher']):
+            flash(['error',f"Аккаунт учителя не найден. Пожалуйста, проверьте его имя пользователя"])
             return redirect(f'/projects/{id}/edit', code=302)
         if 'cover' not in request.files:
             flash(['error','Файл не загружен'])
@@ -415,19 +462,44 @@ def user(username):
     print(ans)
     return render_template("home.html", projects = ans, user = request.cookies.get("jwt"), title = "Projects by " + username, ans2 = ans2)
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings', methods=['GET'])
 def settings():
     token = confirm_token(request.cookies.get("jwt"))
     if not token:
         flash(['error', "Вы не вошли"])
         return redirect('/login') 
+    return render_template('settings.html')
+
+@app.route('/change-username', methods=['GET', 'POST'])
+def change_username():
+    token = confirm_token(request.cookies.get("jwt"))
+    if not token:
+        flash(['error', "Вы не вошли"])
+        return redirect('/login') 
     if request.method == 'GET':
-        return render_template('settings.html')
+        return render_template('change_username.html')
     else:
         form = request.form
-        if form['name'] == '':
-            flash(['error', 'Имя не заполнено'])
+        if form['username'] == '':
+            flash(['error', 'Имя пользователя не заполнено'])
             return redirect('/settings')
+        if auth0.check_user_is_exist(form['username']):
+            flash(['error', 'Имя пользователя уже занято'])
+            return redirect('/settings')
+        auth0.change_username(token, form['username'])
+        flash('Имя пользователя успешно обновлено')
+        return redirect('/settings')
+
+@app.route('/change-password', methods=['GET', 'POST'])
+def change_password():
+    token = confirm_token(request.cookies.get("jwt"))
+    if not token:
+        flash(['error', "Вы не вошли"])
+        return redirect('/login') 
+    if request.method == 'GET':
+        return render_template('change_password.html')
+    else:
+        form = request.form
         if form['password'] == '':
             flash(['error', 'Пароль не заполнен'])
             return redirect('/settings')
@@ -444,33 +516,35 @@ def settings():
             elif (i.islower()):
                 hasLowerCase = True
             elif (i == ' '):
-                flash(['error', 'Пробелы не допускаются в'])
+                hasSpases = True
             else:
                 hasSpecialCharecters = True 
 
         if not hasDigits:
             flash(['error', "Пароль должен содержать хотя бы одну цифру"])
-            return redirect('/register')
         
         if not hasUpperCase:
             flash(['error', "Пароль должен содержать хотя бы одну заглавную букву"])
-            return redirect('/register')
         
         if not hasLowerCase:
             flash(['error', "Пароль должен содержать хотя бы одну строчную букву"])
-            return redirect('/register')
         
         if not hasSpecialCharecters:
             flash(['error', "Пароль должен содержать хотя бы один специальный символ"])
-            return redirect('/register') 
+
+        if hasSpases:
+            flash(['error', "Пароль не должен содержать пробелов"])
 
         if form['password'] != form['password2']:
             flash(['error', "Пароли должны совпадать"])
-            return redirect('/register') 
         
-        if not db.update_user_data(token, form['name'], form['password']):
-            return 'ОШИБКА: настройки'
-        flash('Настройки пользователя успешно обновлены')
+        if hasSpases or not hasDigits or not hasUpperCase or not hasLowerCase or not hasSpecialCharecters or form['password'] != form['password2']:
+            return redirect('/change-password') 
+        
+        #if not db.update_user_data(token, form['name'], form['password']):
+        #    return 'ОШИБКА: смена пароля'
+        auth0.update_user_password(token['name'], form['password'])
+        flash('Пароль успешно обновлен')
         return redirect('/projects')
 
 @app.errorhandler(404)

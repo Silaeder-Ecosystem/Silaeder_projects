@@ -1,9 +1,10 @@
 import os
 import sys
+import re
+
 file_path = os.path.dirname(__file__)
 module_path = os.path.join(file_path, "lib")
 sys.path.append(module_path)
-
 import httplib2
 import googleapiclient.discovery as googleapiclient
 from oauth2client.service_account import ServiceAccountCredentials
@@ -27,14 +28,15 @@ def parse_csv():
         f'''{parse_data('pipls_sheet')}!{parse_data('pipls_range')}''']
     results = service.spreadsheets().values().batchGet(spreadsheetId=parse_data('google_id'), ranges=ranges, valueRenderOption='FORMATTED_VALUE', dateTimeRenderOption='FORMATTED_STRING').execute()
     ans = results['valueRanges']
-    print(ans)
-    emails = list(ans[0]['values']) + list(ans[1]['values'])
-    print(emails)
+    #print(ans)
     res = parse_data('white_list')
-    for i in emails:
-        if i != []:
-            if i[0].find('@') != -1:
-                res.append(i[0].lower())
+    emails = list(ans[0]['values']) + list(ans[1]['values'])
+    print(len(emails))
+    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+'
+    for i in range(len(emails)):
+        print(type(emails[i]))
+        if emails[i] != [] and emails[i][0] != '' and re.match(email_pattern, emails[i][0].lower()):
+            res.append(emails[i][0].lower())
     print(res)
     return res
 

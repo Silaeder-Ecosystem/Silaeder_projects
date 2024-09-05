@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/projectForm.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.ico') }}" type="image/x-icon" />
     <title>Создать проект | Проекты Силаэдра</title>
   </head>
   <body>
-    <form class="container" method="POST" enctype="multipart/form-data">
+    <form name="projectForm" class="container" method="POST" enctype="multipart/form-data">
       <h1 class="title">Создать проект</h1>
       <div class="form">
         <label for="title" class="text__label">
@@ -120,5 +121,6 @@
     <script src='https://unpkg.com/feather-icons'></script>
     <script src="{{ url_for('static', filename='js/projectForm.js') }}"></script>
     <script src="{{ url_for('static', filename='js/feather.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/projectCheck.js') }}"></script>
   </body>
 </html>

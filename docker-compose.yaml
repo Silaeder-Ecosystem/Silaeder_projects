@@ -1,8 +1,21 @@
 version: '3.8'
 
 services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile-api
+    volumes:
+      - .:/api/
+    ports:
+      - 11702:11702
+    depends_on:
+      - pgdb
+    
   web:
-    build: ./
+    build: 
+      context: ./
+      dockerfile: Dockerfile-web
     volumes:
       - ./:/app/
     ports:
@@ -26,20 +39,11 @@ services:
       - PGADMIN_DEFAULT_EMAIL=silaeder_projects@admin.org
       - PGADMIN_DEFAULT_PASSWORD=XAdqjYR79EfDQk6_CzcS5T
     ports:
-      - 11702:80
+      - 11703:80
     depends_on:
       - pgdb
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-
-#  nginx:
-#    image: nginx:latest
-#    ports:
-#      - 80:80
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf
-#    depends_on:
-#      - web
 
 volumes:
   postgres_data:
