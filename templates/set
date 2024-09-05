@@ -8,14 +8,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/button.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='images/logo.ico') }}" type="image/x-icon" />
   </head>
   <body>
     <form class="form__input" method="POST" action="/settings">
       <h1 class="form__title">Настройки</h1>
-      <a href="/change-username" name="submit" type="submit" class="cool_button">Сменить никнейм</a>
-      <a href="/change-password" name="submit" type="submit" class="cool_button">Сменить пароль</a>
+      <a href="/change-username" name="submit" type="submit" id="submit-btn">Сменить никнейм</a>
+      <a href="/change-password" name="submit" type="submit" id="submit-btn">Сменить пароль</a>
     </form>
     <div class="notification__box"></div>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
