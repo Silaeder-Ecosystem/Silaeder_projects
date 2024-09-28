@@ -24,7 +24,11 @@
     border-radius: 10px;
     margin: 12px;
     padding: 16px;
-    height: 7vh;
+    height: 5vh;
+    -webkit-box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    -moz-box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    color: #555!important;
     text-align: center;
     background-color: #fff;
     transition: 0.2s;
@@ -49,6 +53,11 @@
     text-align: center;
     background-color: #fff;
     transition: 0.2s;
+    height: 5vh;
+    -webkit-box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    -moz-box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    box-shadow: 0px 5px 10px 2px var(--shadow-color);
+    color: #555!important;
   }
   .cool_select:hover {
     border: 1px solid #555!important;
